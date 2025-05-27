@@ -5,24 +5,24 @@ import { Search, Popcorn } from "lucide-react";
 import { SearchFormInputs } from "./types/searchFormInputs";
 import { useForm } from "react-hook-form";
 import useDebounce from "./utils/useDebounce";
-import CardMovie from "./components/cardMovie";
+import CardMovie from "./components/CardMovie";
 
 function App() {
   const [listMovie, setListMovie] = useState<Array<ListMovie>>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { register, watch, getValues } = useForm<SearchFormInputs>({
     defaultValues: {
-      s: "",
-      type: "",
-      y: "",
+      s: null,
+      type: null,
+      y: null,
     },
   });
 
   const buscaMovieData = async () => {
     setLoading(true);
     const filtros = getValues();
-
     const params = new URLSearchParams();
+
     if (filtros.s) params.append("s", filtros.s);
     if (filtros.type) params.append("type", filtros.type);
     if (filtros.y) params.append("y", filtros.y);

@@ -1,5 +1,5 @@
 export type SearchFormInputs = {
-  s: string;
-  type?: string;
-  y?: string;
+  s: string | null;
+  type?: string | null;
+  y?: string | null;
 };
