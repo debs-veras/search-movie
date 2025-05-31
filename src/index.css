@@ -1,9 +1,52 @@
 @import "tailwindcss";
 
 body {
-  background: radial-gradient(circle at top, #414141, #121212);
   color: white;
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+}
+
+@keyframes sweep {
+  0% {
+    transform: rotate(45deg) translateY(-100%);
+  }
+
+  100% {
+    transform: rotate(45deg) translateY(100%);
+  }
+}
+
+.animate-sweep {
+  animation: sweep 15s linear infinite;
+}
+
+@keyframes film-roll {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-film-roll {
+  animation: film-roll 30s linear infinite;
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
