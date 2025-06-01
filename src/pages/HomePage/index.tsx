@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import useDebounce from "../../hooks/useDebounce";
 //Services
-import { getBuscaFilme, getBuscaFilmeTmdb } from "../../services/searchMovie";
+import { getBuscaFilme } from "../../services/searchMovieRequest";
 //Icons
 import { GiPopcorn } from "react-icons/gi";
 import { BiSearch } from "react-icons/bi";
@@ -11,7 +11,7 @@ import { FiFilm, FiZap } from "react-icons/fi";
 import { FaClapperboard } from "react-icons/fa6";
 import { LuAlignCenterVertical } from "react-icons/lu";
 //Types
-import { SearchFormInputs } from "../../types/searchFormInputs";
+import { SearchFormInputs } from "../../types/searchFormInputs.d";
 import { ListMovie } from "../../types/listMovie.d";
 //Components
 import CardMovie from "../../components/CardMovie";
@@ -25,6 +25,7 @@ import CardMovie from "../../components/CardMovie";
 //   AlignCenterVertical,
 //   Film,
 // } from "lucide-react";
+
 export default function HomePage() {
   const [listMovie, setListMovie] = useState<Array<ListMovie> | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -57,32 +58,32 @@ export default function HomePage() {
     }
   };
 
-  const fetchMovies = async () => {
-    const { s } = getValues();
+  // const fetchMovies = async () => {
+  //   const { s } = getValues();
 
-    if (!s) return;
+  //   if (!s) return;
 
-    setLoading(true);
-    try {
-      const results = await getBuscaFilmeTmdb(s);
-      console.log("Resultados da busca:", results);
-    } catch (err) {
-      console.error("Erro ao buscar filmes", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //   setLoading(true);
+  //   try {
+  //     const results = await getBuscaFilmeTmdb(s);
+  //     console.log("Resultados da busca:", results);
+  //   } catch (err) {
+  //     console.error("Erro ao buscar filmes", err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  const debounceFetch = useDebounce(fetchMovies, 1000);
+  // const debounceFetch = useDebounce(fetchMovies, 1000);
 
-  useEffect(() => {
-    const subscription = watch(() => debounceFetch());
-    return () => subscription.unsubscribe();
-  }, [watch, debounceFetch]);
+  // useEffect(() => {
+  //   const subscription = watch(() => debounceFetch());
+  //   return () => subscription.unsubscribe();
+  // }, [watch, debounceFetch]);
+
   const filtroDebounce = useDebounce(buscaMovieData, 1000);
-
   useEffect(() => {
-    fetchMovies();
+    // fetchMovies();
     const subscription = watch(() => filtroDebounce());
     return () => subscription.unsubscribe();
   }, [filtroDebounce, watch]);
