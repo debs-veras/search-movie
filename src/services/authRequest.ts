@@ -6,6 +6,11 @@ export const userAuthRequestToken = async (api_key: string) => {
 };
 
 
-export const userRequestToken = async (api_key:string, data: ResquestToken) => {
-  return await postRequest(`3/authentication/token/validate_with_login?api_key=${api_key}`, data);
+export const userCreateSession = async (data: ResquestToken) => {
+  return await postRequest(`3/authentication/token/validate_with_login`, data);
 };
+
+export const userValideteSession = async () => {
+  return await getRequest(`/3/authentication`);
+};
+

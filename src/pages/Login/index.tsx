@@ -3,7 +3,7 @@ import { Auth } from "../../types/auth.d";
 import { useForm } from "react-hook-form";
 import {
   userAuthRequestToken,
-  userRequestToken,
+  userCreateSession,
 } from "../../services/authRequest";
 import useToastLoading from "../../hooks/useToastLoading";
 import { useNavigate } from "react-router-dom";
@@ -27,14 +27,14 @@ export default function Login() {
     await handleSubmit(
       (dados) => (usuarioLogin = { ...usuarioLogin, ...dados })
     )();
-
+    
     request = () => userAuthRequestToken(usuarioLogin.api_key);
     response = await request();
     if (response.success) {
       localStorage.setItem("@api_key", usuarioLogin.api_key);
       localStorage.setItem("@admin_token", response.request_token);
       request = () =>
-        userRequestToken(usuarioLogin.api_key, {
+        userCreateSession({
           username: usuarioLogin.username,
           password: usuarioLogin.password,
           request_token: response.request_token,

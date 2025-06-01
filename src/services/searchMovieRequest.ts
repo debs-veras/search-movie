@@ -2,7 +2,7 @@
 import { getRequest } from "../utils/axiosRequest";
 
 export const getBuscaFilme = async (url: string) => {
-  return await getRequest(`?${url}`);
+  return await getRequest(`/3/search/multi?${url}`);
 };
 
 // export const getBuscaFilmeTmdb = async (query: string, type = "movie") => {
