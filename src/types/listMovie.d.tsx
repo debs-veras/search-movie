@@ -1,7 +1,11 @@
 export type ListMovie = {
-  Title: string;
-  Year: string;
-  imdbID: string;
-  Type: string;
-  Poster: string;
+  poster_path:  string | null;
+  backdrop_path: string | null;
+  id: number;
+  name: string | null;
+  title: string | null;
+  first_air_date: string | null;
+  release_date: string | null;
+  overview: string;
+  media_type: string;
 };

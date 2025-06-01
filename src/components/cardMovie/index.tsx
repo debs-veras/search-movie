@@ -3,7 +3,7 @@ import { ListMovie } from "../../types/listMovie.d";
 import { FiFilm, FiTv } from "react-icons/fi";
 import { BsPlay } from "react-icons/bs";
 import { useState } from "react";
-import MovieDetailsDrawer from "../MovieDetailsDrawer";
+// import MovieDetailsDrawer from "../MovieDetailsDrawer";
 
 type Props = {
   movie: ListMovie;
@@ -13,15 +13,18 @@ export default function CardMovie({ movie }: Props) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   return (
     <>
-      <div className="group relative rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.03] will-change-transform shadow-lg hover:shadow-xl hover:shadow-black/40" onClick={() => setIsDrawerOpen(true)}>
+      <div
+        className="group relative rounded-xl overflow-hidden transition-all duration-300 hover:scale-[1.03] will-change-transform shadow-lg hover:shadow-xl hover:shadow-black/40"
+        onClick={() => setIsDrawerOpen(true)}
+      >
         {/* Container da imagem com overlay */}
         <div className="relative h-80 w-full">
           <img
-            alt={movie.Title}
+            alt={movie?.name || movie?.title || "Movie Poster"}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             src={
-              movie?.Poster && movie.Poster !== "N/A"
-                ? movie.Poster
+              movie?.poster_path && movie.poster_path !== ""
+                ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
                 : "/picture.png"
             }
             loading="lazy"
@@ -34,26 +37,30 @@ export default function CardMovie({ movie }: Props) {
         {/* Informações do filme */}
         <div className="absolute z-1 bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/80 to-transparent">
           <h3 className="text-white text-lg font-bold line-clamp-2 leading-tight mb-1">
-            {movie.Title}
+            {movie?.name || movie?.title || "Título Indisponível"}
           </h3>
 
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
               <BiCalendar className="text-red-400" size={20} />
-              <span>{movie.Year}</span>
+              <span>
+                {movie?.first_air_date ||
+                  movie?.release_date ||
+                  "Data Indisponível"}
+              </span>
             </div>
 
             <span
               className={`flex items-center gap-1 px-2 py-1 rounded-full font-semibold ${
-                movie.Type === "movie" ? "bg-blue-600" : "bg-purple-600"
+                movie.media_type === "movie" ? "bg-blue-600" : "bg-purple-600"
               }`}
             >
-              {movie.Type === "movie" ? (
+              {movie.media_type === "movie" ? (
                 <FiFilm size={14} />
               ) : (
                 <FiTv size={14} />
               )}
-              {movie.Type}
+              {movie.media_type}
             </span>
           </div>
         </div>
@@ -66,11 +73,11 @@ export default function CardMovie({ movie }: Props) {
           </button>
         </div>
       </div>
-      <MovieDetailsDrawer
+      {/* <MovieDetailsDrawer
         movie={movie}
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
-      />
+      /> */}
     </>
   );
 }

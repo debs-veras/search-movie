@@ -21,14 +21,16 @@ export default function Login() {
     setLoading(true);
     toastLoading({ mensagem: "Verificando usuário" });
     let usuarioLogin: Auth = {} as Auth;
+
     let response: any;
     let request: any;
 
     await handleSubmit(
       (dados) => (usuarioLogin = { ...usuarioLogin, ...dados })
     )();
-    
+
     request = () => userAuthRequestToken(usuarioLogin.api_key);
+
     response = await request();
     if (response.success) {
       localStorage.setItem("@api_key", usuarioLogin.api_key);
