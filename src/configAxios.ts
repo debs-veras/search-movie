@@ -1,8 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import { API_URL_TMDB } from "./constants/api";
 
-const getAxios = async (timeout: number = 600000) => {
-  const token: string | null = localStorage.getItem("@admin_token");
+const getAxios = (timeout: number = 600000) => {
   const apiKey: string | null = localStorage.getItem("@api_key");
 
   const instance: AxiosInstance = axios.create({
@@ -13,10 +12,7 @@ const getAxios = async (timeout: number = 600000) => {
       language: "pt-BR",
       include_adult: false,
       region: "BR",
-    },
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    }
   });
 
   return instance;

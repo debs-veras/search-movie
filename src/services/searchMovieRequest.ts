@@ -1,4 +1,3 @@
-// import { API_URL_TMDB } from "../constants/api";
 import { getRequest } from "../utils/axiosRequest";
 
 export const getBuscaFilme = async (url: string) => {

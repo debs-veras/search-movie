@@ -17,11 +17,11 @@ function handleError(error: any) {
 }
 
 export const putRequest = async (url: string, obj: any) => {
-  const axios = await instance();
+  const axios = instance();
   try {
     const response = await axios.put(url, obj);
     return {
-      dados: response.data.dados,
+      dados: response.data,
       ...response.data,
     };
   } catch (error: any) {
@@ -30,12 +30,12 @@ export const putRequest = async (url: string, obj: any) => {
 };
 
 export const postRequest = async (url: string, obj: any) => {
-  const axios = await instance();
+  const axios = instance();
 
   try {
     const response = await axios.post(url, obj);
     return {
-      dados: response.data.dados,
+      dados: response.data,
       ...response.data,
     };
   } catch (error: any) {
@@ -44,7 +44,7 @@ export const postRequest = async (url: string, obj: any) => {
 };
 
 export const getRequest = async (url: string) => {
-  const axios = await instance();
+  const axios = instance();
   try {
     const response = await axios.get(url);
     return response.data;
@@ -54,7 +54,7 @@ export const getRequest = async (url: string) => {
 };
 
 export const deleteRequest = async (url: string) => {
-  const axios = await instance();
+  const axios = instance();
 
   try {
     const response = await axios.delete(url);
@@ -65,7 +65,7 @@ export const deleteRequest = async (url: string) => {
 };
 
 export const patchRequest = async (url: string, obj: any) => {
-  const axios = await instance();
+  const axios = instance();
 
   try {
     const response = await axios.patch(url, obj);

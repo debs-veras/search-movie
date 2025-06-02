@@ -1,48 +1,111 @@
-import { useState } from "react";
-import { Auth } from "../../types/auth.d";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
+import {
+  GiFilmProjector,
+  GiFilmStrip,
+  GiClapperboard,
+  GiTicket,
+  GiDirectorChair,
+  GiFilmSpool,
+} from "react-icons/gi";
+import {
+  FaEye,
+  FaEyeSlash,
+  FaKey,
+  FaLock,
+  FaUser,
+  FaFilm,
+  FaStar,
+  FaTheaterMasks,
+  FaPhotoVideo,
+  FaVideo,
+} from "react-icons/fa";
+import {
+  MdLocalMovies,
+  MdMovieFilter,
+  MdMovie,
+  MdOutlineSlowMotionVideo,
+} from "react-icons/md";
+import {
+  BsStars,
+  BsCameraReels,
+  BsFilm,
+  BsTicketPerforated,
+  BsCollectionPlay,
+} from "react-icons/bs";
+import { BiMoviePlay, BiCameraMovie, BiSolidCameraMovie } from "react-icons/bi";
+import { IoMdFilm } from "react-icons/io";
+import useToastLoading from "../../hooks/useToastLoading";
 import {
   userAuthRequestToken,
   userCreateSession,
 } from "../../services/authRequest";
-import useToastLoading from "../../hooks/useToastLoading";
-import { useNavigate } from "react-router-dom";
-import { GiPopcorn } from "react-icons/gi";
-import { FaKey, FaLock, FaUser } from "react-icons/fa";
-import Botao from "../../components/Button";
+
+const loginSchema = z.object({
+  api_key: z.string().min(1, "API Key é obrigatória"),
+  username: z.string().min(1, "Usuário é obrigatório"),
+  password: z.string().min(1, "Senha é obrigatória"),
+});
+
+const movieQuotes = [
+  "May the Force be with you. - Star Wars",
+  "Here's looking at you, kid. - Casablanca",
+  "You're gonna need a bigger boat. - Jaws",
+  "My precious. - The Lord of the Rings",
+  "Just keep swimming. - Finding Nemo",
+  "I'll be back. - The Terminator",
+];
+
+const genres = [
+  { name: "Ação", icon: <FaStar className="text-red-500" /> },
+  { name: "Drama", icon: <MdMovieFilter className="text-blue-400" /> },
+  { name: "Comédia", icon: <FaTheaterMasks className="text-yellow-400" /> },
+  { name: "Ficção", icon: <BsStars className="text-green-400" /> },
+  { name: "Terror", icon: <GiClapperboard className="text-purple-500" /> },
+];
 
 export default function Login() {
-  const { register, handleSubmit } = useForm<Auth>();
-  const toastLoading = useToastLoading();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ resolver: zodResolver(loginSchema) });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [currentQuote, setCurrentQuote] = useState("");
+  const toastLoading = useToastLoading();
 
-  const handleLogin = async () => {
+  useEffect(() => {
+    const quoteInterval = setInterval(() => {
+      setCurrentQuote(
+        movieQuotes[Math.floor(Math.random() * movieQuotes.length)]
+      );
+    }, 5000);
+
+    return () => {
+      clearInterval(quoteInterval);
+    };
+  }, []);
+
+  const handleLogin = handleSubmit(async (dados) => {
     setLoading(true);
     toastLoading({ mensagem: "Verificando usuário" });
-    let usuarioLogin: Auth = {} as Auth;
-
     let response: any;
-    let request: any;
-
-    await handleSubmit(
-      (dados) => (usuarioLogin = { ...usuarioLogin, ...dados })
-    )();
-
-    request = () => userAuthRequestToken(usuarioLogin.api_key);
-
-    response = await request();
+    response = await userAuthRequestToken(dados.api_key);
     if (response.success) {
-      localStorage.setItem("@api_key", usuarioLogin.api_key);
-      localStorage.setItem("@admin_token", response.request_token);
-      request = () =>
-        userCreateSession({
-          username: usuarioLogin.username,
-          password: usuarioLogin.password,
-          request_token: response.request_token,
-        });
-      response = await request();
+      response = await userCreateSession(dados.api_key, {
+        username: dados.username,
+        password: dados.password,
+        request_token: response.request_token,
+      });
+
       if (response.success) {
+        localStorage.setItem("@api_key", dados.api_key);
+        localStorage.setItem("@session_id", response.request_token);
         toastLoading({
           mensagem: "Login realizado com sucesso",
           tipo: "success",
@@ -58,87 +121,176 @@ export default function Login() {
       });
     }
     setLoading(false);
-  };
+  });
+
+  const floatingIcons = [
+    GiFilmStrip,
+    GiClapperboard,
+    GiTicket,
+    GiDirectorChair,
+    GiFilmSpool,
+    FaFilm,
+    FaPhotoVideo,
+    FaVideo,
+    MdMovie,
+    MdOutlineSlowMotionVideo,
+    BsFilm,
+    BsTicketPerforated,
+    BsCollectionPlay,
+    BiMoviePlay,
+    BiCameraMovie,
+    IoMdFilm,
+  ];
 
   return (
-    <div
-      className="min-h-screen bg-black bg-cover bg-center relative flex items-center justify-center px-4"
-      style={{ backgroundImage: `url('/img/bg-movies.jpg')` }}
-    >
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-zinc-900/90 to-black/70 backdrop-blur-sm" />
+    <div className="min-h-screen bg-gradient-to-br from-zinc-900 to-black relative flex items-center justify-center px-4 overflow-hidden">
+      {/* Elementos flutuantes */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(15)].map((_, i) => {
+          const Icon =
+            floatingIcons[Math.floor(Math.random() * floatingIcons.length)];
+          return (
+            <div
+              key={i}
+              className={`absolute ${
+                i % 3 === 0
+                  ? "text-amber-400"
+                  : i % 3 === 1
+                  ? "text-red-400"
+                  : "text-blue-400"
+              } opacity-10 text-4xl animate-float`}
+              style={{
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                animationDuration: `${10 + Math.random() * 20}s`,
+                animationDelay: `${Math.random() * 5}s`,
+              }}
+            >
+              <Icon />
+            </div>
+          );
+        })}
+      </div>
 
-      <div className="relative z-10 p-8 rounded-xl shadow-2xl bg-zinc-900/80 backdrop-blur-md border border-zinc-700 max-w-md w-full">
-        <div className="flex items-center gap-3 group justify-center mb-6">
+      {/* Formulário */}
+      <div className="relative z-10 p-8 rounded-xl shadow-2xl bg-zinc-900/90 backdrop-blur-md border border-zinc-700 max-w-md w-full transform transition-all duration-500 hover:shadow-amber-500/20">
+        {/* Cabeçalho */}
+        <div className="flex items-center gap-3 group justify-center mb-8 relative">
+          <div className="absolute -top-8 -left-8 w-32 h-32 rounded-full bg-amber-500/10 blur-xl"></div>
+          <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-red-500/10 blur-xl"></div>
+
           <div className="relative">
-            <GiPopcorn
-              size={32}
-              className="text-red-600 group-hover:text-red-500 transition-colors"
+            <GiFilmProjector
+              size={36}
+              className="text-amber-500 group-hover:text-amber-400 transition-colors"
             />
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-600 rounded-full animate-pulse" />
+            <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-500 rounded-full animate-pulse" />
           </div>
-          <h1 className="text-2xl font-bold">
-            <span className="text-red-600">Movie</span>
-            <span className="text-gray-300">Explore</span>
+          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-red-500">
+            Movie<span className="text-white">Verse</span>
           </h1>
         </div>
 
-        <form className="space-y-5">
-          <div className="relative">
-            <label className="text-sm text-zinc-300">API Key</label>
-            <div className="flex items-center mt-1 bg-zinc-800 rounded px-3">
-              <FaKey className="text-zinc-400 mr-2" />
+        {/* Citação de filme */}
+        <div className="text-center mb-6 text-sm text-amber-300/70 italic transition-opacity duration-1000">
+          <BsCameraReels className="inline mr-2" /> "{currentQuote}"
+        </div>
+
+        <form className="space-y-6" onSubmit={handleLogin}>
+          {/* Campos do formulário */}
+          <div className="relative group">
+            <label className="text-sm text-zinc-300 flex items-center">
+              <FaKey className="mr-2 text-amber-400" /> Chave da API
+            </label>
+            <div className="flex items-center mt-1 bg-zinc-800/70 rounded-lg px-3 border border-zinc-700 group-hover:border-amber-500 transition-all duration-300">
               <input
                 type="text"
                 {...register("api_key")}
-                className="w-full p-3 bg-transparent text-white placeholder-gray-400 focus:outline-none"
-                placeholder="Insira sua API Key"
-                required
+                className="w-full p-3 bg-transparent text-white placeholder-zinc-500 focus:outline-none"
+                placeholder="Sua chave do TMDB"
               />
             </div>
+            {errors.api_key && (
+              <p className="text-amber-400 text-xs mt-1 animate-pulse flex items-center">
+                <BiSolidCameraMovie className="mr-1" /> {errors.api_key.message}
+              </p>
+            )}
           </div>
 
-          <div className="relative">
-            <label className="text-sm text-zinc-300">Usuário</label>
-            <div className="flex items-center mt-1 bg-zinc-800 rounded px-3">
-              <FaUser className="text-zinc-400 mr-2" />
+          <div className="relative group">
+            <label className="text-sm text-zinc-300 flex items-center">
+              <FaUser className="mr-2 text-blue-400" /> Usuário
+            </label>
+            <div className="flex items-center mt-1 bg-zinc-800/70 rounded-lg px-3 border border-zinc-700 group-hover:border-blue-500 transition-all duration-300">
               <input
                 type="text"
                 {...register("username")}
-                className="w-full p-3 bg-transparent text-white placeholder-gray-400 focus:outline-none"
-                placeholder="Nome de usuário"
-                required
+                className="w-full p-3 bg-transparent text-white placeholder-zinc-500 focus:outline-none"
+                placeholder="Seu nome de usuário"
               />
             </div>
+            {errors.username && (
+              <p className="text-amber-400 text-xs mt-1 animate-pulse flex items-center">
+                <MdLocalMovies className="mr-1" /> {errors.username.message}
+              </p>
+            )}
           </div>
 
-          <div className="relative">
-            <label className="text-sm text-zinc-300">Senha</label>
-            <div className="flex items-center mt-1 bg-zinc-800 rounded px-3">
-              <FaLock className="text-zinc-400 mr-2" />
+          <div className="relative group">
+            <label className="text-sm text-zinc-300 flex items-center">
+              <FaLock className="mr-2 text-red-400" /> Senha
+            </label>
+            <div className="flex items-center mt-1 bg-zinc-800/70 rounded-lg px-3 border border-zinc-700 group-hover:border-red-500 transition-all duration-300">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 {...register("password")}
-                className="w-full p-3 bg-transparent text-white placeholder-gray-400 focus:outline-none"
-                placeholder="Digite sua senha"
-                required
+                className="w-full p-3 bg-transparent text-white placeholder-zinc-500 focus:outline-none"
+                placeholder="Sua senha secreta"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-zinc-400 hover:text-white ml-2 focus:outline-none transition-colors"
+                tabIndex={-1}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
             </div>
+            {errors.password && (
+              <p className="text-amber-400 text-xs mt-1 animate-pulse flex items-center">
+                <FaFilm className="mr-1" /> {errors.password.message}
+              </p>
+            )}
           </div>
 
-          <Botao
-            id="botaoSalvar"
-            onClick={handleLogin}
-            carregando={loading}
+          <button
+            type="submit"
             disabled={loading}
-            texto={"Entrar no multiverso"}
-            tipo={"sucesso"}
-            className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-bold py-3 px-4 rounded transition duration-300 disabled:opacity-50 cursor-pointer"
-          />
+            className="w-full bg-gradient-to-r from-amber-600 to-red-700 hover:from-amber-500 hover:to-red-600 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-amber-500/30 disabled:opacity-50 group flex items-center justify-center"
+          >
+            {loading ? <>Acessando o catálogo...</> : <>Acessar o Cinema</>}
+          </button>
         </form>
 
-        <p className="text-center text-zinc-400 text-xs mt-6">
-          Acesso ao catálogo de filmes, séries e animes com sua conta TMDB
-        </p>
+        {/* Rodapé */}
+        <div className="mt-8 text-center">
+          <div className="flex justify-center space-x-4 mb-3">
+            {genres.map((genre, index) => (
+              <div key={index} className="flex flex-col items-center group">
+                <div className="group-hover:scale-125 transition-transform duration-300">
+                  {genre.icon}
+                </div>
+                <span className="text-xs text-zinc-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {genre.name}
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-zinc-500 flex items-center justify-center">
+            <IoMdFilm className="mr-1" /> Sua jornada cinematográfica começa
+            aqui
+          </p>
+        </div>
       </div>
     </div>
   );

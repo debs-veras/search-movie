@@ -7,46 +7,34 @@ body {
   padding: 0;
 }
 
-@keyframes sweep {
-  0% {
-    transform: rotate(45deg) translateY(-100%);
-  }
-
-  100% {
-    transform: rotate(45deg) translateY(100%);
-  }
-}
-
-.animate-sweep {
-  animation: sweep 15s linear infinite;
-}
-
-@keyframes film-roll {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-film-roll {
-  animation: film-roll 30s linear infinite;
-}
-
 @keyframes float {
 
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) rotate(0deg);
   }
 
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+
+  50% {
+    opacity: 1;
   }
 }
 
 .animate-float {
-  animation: float 6s ease-in-out infinite;
+  animation: float 8s ease-in-out infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
 }

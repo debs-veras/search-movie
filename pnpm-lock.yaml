@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@hookform/resolvers':
+        specifier: ^5.0.1
+        version: 5.0.1(react-hook-form@7.56.4(react@19.0.0))
       '@tailwindcss/vite':
         specifier: ^4.0.11
         version: 4.0.11(vite@6.2.0(jiti@2.4.2)(lightningcss@1.29.2))
@@ -38,6 +41,9 @@ importers:
       tailwindcss:
         specifier: ^4.0.11
         version: 4.0.11
+      zod:
+        specifier: ^3.25.48
+        version: 3.25.48
     devDependencies:
       '@eslint/js':
         specifier: ^9.21.0
@@ -342,6 +348,11 @@ packages:
     resolution: {integrity: sha512-JubJ5B2pJ4k4yGxaNLdbjrnk9d/iDz6/q8wOilpIowd6PJPgaxCuHBnBszq7Ce2TyMrywm5r4PnKm6V3iiZF+g==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
+  '@hookform/resolvers@5.0.1':
+    resolution: {integrity: sha512-u/+Jp83luQNx9AdyW2fIPGY6Y7NG68eN2ZW8FOJYL+M0i4s49+refdJdOp/A9n9HFQtQs3HIDHQvX3ZET2o7YA==}
+    peerDependencies:
+      react-hook-form: ^7.55.0
+
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
     engines: {node: '>=18.18.0'}
@@ -486,6 +497,9 @@ packages:
     resolution: {integrity: sha512-AyleYRPU7+rgkMWbEh71fQlrzRfeP6SyMnRf9XX4fCdDPAJumdSBqYEcWPMzVQ4ScAl7E4oFfK0GUVn77xSwbw==}
     cpu: [x64]
     os: [win32]
+
+  '@standard-schema/utils@0.3.0':
+    resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
 
   '@tailwindcss/node@4.0.11':
     resolution: {integrity: sha512-y1Ko/QaZh6Fv8sSOOPpRztT8nvNKSetvE4CLxsDdyY5kkBS7hKq04D3y3ldelniWe6YqRIzBHTzfAIc1hZ+0FA==}
@@ -1409,6 +1423,9 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
+  zod@3.25.48:
+    resolution: {integrity: sha512-0X1mz8FtgEIvaxGjdIImYpZEaZMrund9pGXm3M6vM7Reba0e2eI71KPjSCGXBfwKDPwPoywf6waUKc3/tFvX2Q==}
+
 snapshots:
 
   '@ampproject/remapping@2.3.0':
@@ -1643,6 +1660,11 @@ snapshots:
       '@eslint/core': 0.12.0
       levn: 0.4.1
 
+  '@hookform/resolvers@5.0.1(react-hook-form@7.56.4(react@19.0.0))':
+    dependencies:
+      '@standard-schema/utils': 0.3.0
+      react-hook-form: 7.56.4(react@19.0.0)
+
   '@humanfs/core@0.19.1': {}
 
   '@humanfs/node@0.16.6':
@@ -1741,6 +1763,8 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.34.9':
     optional: true
+
+  '@standard-schema/utils@0.3.0': {}
 
   '@tailwindcss/node@4.0.11':
     dependencies:
@@ -2606,3 +2630,5 @@ snapshots:
   yallist@3.1.1: {}
 
   yocto-queue@0.1.0: {}
+
+  zod@3.25.48: {}

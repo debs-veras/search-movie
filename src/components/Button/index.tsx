@@ -8,6 +8,7 @@ type Props = {
     carregando?: boolean,
     disabled?: boolean,
     tipo?: "erro" | "sucesso" | "padrao" | "aviso" | "impressao" | "informacao", //erro, aviso, sucesso, padrao, informacao
+    typeBotao?: "button" | "submit" | "reset",
     texto?: string | JSX.Element,
     icone?: JSX.Element,
     className?: string,
@@ -32,7 +33,7 @@ const Botao = forwardRef((props: Props, _) => {
     return (
         <button
             id={id}
-            type="button"
+            type={props.typeBotao || "button"}	
             onClick={onClick}
             className={classNames("relative flex flex-row gap-2 items-center text-sm font-medium rounded-md disabled:cursor-not-allowed",
                 carregando && "grayscale-[50%] cursor-not-allowed ",
