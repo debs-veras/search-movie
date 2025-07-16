@@ -14,7 +14,6 @@ import {
 import {
   FaEye,
   FaEyeSlash,
-  FaKey,
   FaLock,
   FaUser,
   FaFilm,
@@ -36,16 +35,16 @@ import {
   BsTicketPerforated,
   BsCollectionPlay,
 } from "react-icons/bs";
-import { BiMoviePlay, BiCameraMovie, BiSolidCameraMovie } from "react-icons/bi";
+import { BiMoviePlay, BiCameraMovie } from "react-icons/bi";
 import { IoMdFilm } from "react-icons/io";
 import useToastLoading from "../../hooks/useToastLoading";
 import {
   userAuthRequestToken,
   userCreateSession,
+  userValidateLoginSession,
 } from "../../services/authRequest";
 
 const loginSchema = z.object({
-  api_key: z.string().min(1, "API Key é obrigatória"),
   username: z.string().min(1, "Usuário é obrigatório"),
   password: z.string().min(1, "Senha é obrigatória"),
 });
@@ -95,22 +94,23 @@ export default function Login() {
     setLoading(true);
     toastLoading({ mensagem: "Verificando usuário" });
     let response: any;
-    response = await userAuthRequestToken(dados.api_key);
+    response = await userAuthRequestToken();
     if (response.success) {
-      response = await userCreateSession(dados.api_key, {
+      response = await userValidateLoginSession({
         username: dados.username,
         password: dados.password,
         request_token: response.request_token,
       });
-
       if (response.success) {
-        localStorage.setItem("@api_key", dados.api_key);
-        localStorage.setItem("@session_id", response.request_token);
-        toastLoading({
-          mensagem: "Login realizado com sucesso",
-          tipo: "success",
-          onClose: () => navigate("/"),
-        });
+        response = await userCreateSession(response.request_token);
+        if (response.success) {
+          localStorage.setItem("@session_id", response.session_id);
+          toastLoading({
+            mensagem: "Login realizado com sucesso",
+            tipo: "success",
+            onClose: () => navigate("/"),
+          });
+        }
       }
     }
 
@@ -198,24 +198,6 @@ export default function Login() {
 
         <form className="space-y-6" onSubmit={handleLogin}>
           {/* Campos do formulário */}
-          <div className="relative group">
-            <label className="text-sm text-zinc-300 flex items-center">
-              <FaKey className="mr-2 text-amber-400" /> Chave da API
-            </label>
-            <div className="flex items-center mt-1 bg-zinc-800/70 rounded-lg px-3 border border-zinc-700 group-hover:border-amber-500 transition-all duration-300">
-              <input
-                type="text"
-                {...register("api_key")}
-                className="w-full p-3 bg-transparent text-white placeholder-zinc-500 focus:outline-none"
-                placeholder="Sua chave do TMDB"
-              />
-            </div>
-            {errors.api_key && (
-              <p className="text-amber-400 text-xs mt-1 animate-pulse flex items-center">
-                <BiSolidCameraMovie className="mr-1" /> {errors.api_key.message}
-              </p>
-            )}
-          </div>
 
           <div className="relative group">
             <label className="text-sm text-zinc-300 flex items-center">

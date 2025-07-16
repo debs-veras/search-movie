@@ -1,5 +1,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { ListMovie } from "../types/listMovie.d";
+import {
+  MovieResult,
+  MultiResult,
+  PersonResult,
+  SerieResult,
+} from "../types/listResultsData.d";
 import { SearchFormInputs } from "../types/searchFormInputs.d";
 import { getBuscaFilme } from "../services/searchMovieRequest";
 import useDebounce from "../hooks/useDebounce";
@@ -7,7 +12,10 @@ import useDebounce from "../hooks/useDebounce";
 type SearchContextType = {
   filtros: SearchFormInputs;
   setFiltros: (val: SearchFormInputs) => void;
-  listMovie: ListMovie[] | null;
+  listMovie: MovieResult[] | null;
+  listPerson?: PersonResult[] | null;
+  listSerie?: SerieResult[] | null;
+  listMulti?: MultiResult[] | null;
   loading: boolean;
   isFetchingMore: boolean;
   fetchMore: () => Promise<void>;
@@ -17,19 +25,25 @@ type SearchContextType = {
 const SearchContext = createContext({} as SearchContextType);
 
 export function SearchProvider({ children }: { children: React.ReactNode }) {
-  const [filtros, setFiltros] = useState<SearchFormInputs>({ query: "" });
-  const [listMovie, setListMovie] = useState<ListMovie[] | null>(null);
+  const [filtros, setFiltros] = useState<SearchFormInputs>({
+    query: "",
+    type: "",
+  });
+  const [listMovie, setListMovie] = useState<MovieResult[] | null>(null);
+  const [listPerson, setListPerson] = useState<PersonResult[] | null>(null);
+  const [listSerie, setListSerie] = useState<SerieResult[] | null>(null);
+  const [listMulti, setListMulti] = useState<MultiResult[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   const buscaMovieData = async (resetPage = true) => {
-    if (!filtros.query) {
-      setListMovie(null);
+    if (!filtros.query || !filtros.type) {
       setHasMore(false);
       return;
     }
+
     const currentPage = resetPage ? 1 : page;
     if (resetPage) setLoading(true);
     else setIsFetchingMore(true);
@@ -39,18 +53,41 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     params.append("page", String(currentPage));
 
     try {
-      const response = await getBuscaFilme(params.toString());
+      const response = await getBuscaFilme(
+        params.toString(),
+        filtros.type ?? ""
+      );
+
       const results = response.results || [];
       const totalPages = response.total_pages || 1;
 
-      setListMovie((prev) =>
-        resetPage ? results : [...(prev || []), ...results]
-      );
+      if (filtros.type === "person")
+        setListPerson((prev) =>
+          resetPage ? results : [...(prev || []), ...results]
+        );
+      if (filtros.type === "tv") {
+        setListSerie((prev) =>
+          resetPage ? results : [...(prev || []), ...results]
+        );
+      }
+      if (filtros.type === "movie")
+        setListMovie((prev) =>
+          resetPage ? results : [...(prev || []), ...results]
+        );
+      if (filtros.type === "multi") {
+        setListMulti((prev) =>
+          resetPage ? results : [...(prev || []), ...results]
+        );
+      }
+
       setPage(currentPage + 1);
       setHasMore(currentPage < totalPages);
     } catch (error) {
       console.error(error);
       setListMovie(null);
+      setListPerson(null);
+      setListSerie(null);
+      setListMulti(null);
       setHasMore(false);
     } finally {
       if (resetPage) setLoading(false);
@@ -61,6 +98,10 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   const filtroDebounce = useDebounce(() => buscaMovieData(true), 1000);
 
   useEffect(() => {
+    setListMovie(null);
+    setListPerson(null);
+    setListSerie(null);
+    setListMulti(null);
     filtroDebounce();
   }, [filtros]);
 
@@ -74,6 +115,9 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
         filtros,
         setFiltros,
         listMovie,
+        listPerson,
+        listSerie,
+        listMulti,
         loading,
         fetchMore,
         hasMore,

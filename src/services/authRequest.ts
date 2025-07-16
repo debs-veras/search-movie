@@ -1,15 +1,28 @@
 import { ResquestToken } from "../types/auth.d";
-import { getRequest, postRequest } from "../utils/axiosRequest";
+import { deleteRequest, getRequest, postRequest } from "../utils/axiosRequest";
+const API_KEY = import.meta.env.VITE_API_KEY;
 
-export const userAuthRequestToken = async (api_key: string) => {
-  return await getRequest(`3/authentication/token/new?api_key=${api_key}`);
+export const userAuthRequestToken = async () => {
+  return await getRequest(`3/authentication/token/new?api_key=${API_KEY}`);
 };
 
-export const userCreateSession = async (api_key: string, data: ResquestToken) => {
-  return await postRequest(`3/authentication/token/validate_with_login?api_key=${api_key}`, data);
+export const userValidateLoginSession = async (data: ResquestToken) => {
+  return await postRequest("3/authentication/token/validate_with_login", data);
 };
 
-export const userValideteSession = async () => {
-  return await getRequest(`/3/authentication`);
+export const userCreateSession = async (request_token: string) => {
+    return await postRequest(`3/authentication/session/new`, {
+    request_token,
+  });
+};
+
+export const userValideteSession = async (session_id: string | null) => {
+  return await getRequest(`3/account?api_key=${API_KEY}&session_id=${session_id}`);
+};
+
+export const removeSession = async (sessionId: string) => {
+  return await deleteRequest(`3/authentication/session`, {
+    session_id: sessionId, 
+  });
 };
 

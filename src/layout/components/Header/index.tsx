@@ -1,38 +1,129 @@
-import { GiPopcorn } from "react-icons/gi";
-import { useSearch } from "../../../context/FiltroContext";
 import { BiSearch } from "react-icons/bi";
+import { useState, useEffect } from "react";
+import { useSearch } from "../../../context/FiltroContext";
+import Logo from "../../../components/Logo";
+import MenuUser from "../../../components/MenuUser";
 
 export default function Header() {
   const { filtros, setFiltros } = useSearch();
+  const [searchActive, setSearchActive] = useState(false);
+
+  const handleClearFilters = () => {
+    setFiltros({ query: "", type: "" });
+    setSearchActive(false);
+  };
+
+  useEffect(() => {
+    if (filtros.query) setSearchActive(true);
+  }, [filtros.query]);
+
   return (
-    <header className="relative z-10 p-6 border-b border-gray-900 bg-[#0a0a0a]/90 backdrop-blur-sm">
-      <div className="container mx-auto flex flex-col md:flex-row gap-6 items-center">
-        <div className="flex items-center gap-3 group">
-          <div className="relative">
-            <GiPopcorn
-              size={32}
-              className="text-red-600 group-hover:text-red-500 transition-colors"
-            />
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-600 rounded-full animate-pulse" />
+    <header className="sticky top-0 z-50 p-4 border-b border-gray-800 bg-gradient-to-b from-black/95 to-black/80 backdrop-blur-md shadow-lg">
+      <div className="mx-auto px-4">
+        {/* Desktop Layout */}
+        <div className="hidden md:flex items-center justify-between h-16">
+          {/* Logo + Navigation */}
+          <div className="flex items-center space-x-8">
+            <Logo />
+
+            <nav className="hidden lg:flex space-x-6">
+              <button
+                className="text-gray-300 hover:text-white transition-colors"
+                onClick={() => setFiltros({ ...filtros, type: "movie" })}
+              >
+                Filmes
+              </button>
+              <button
+                className="text-gray-300 hover:text-white transition-colors"
+                onClick={() => setFiltros({ ...filtros, type: "tv" })}
+              >
+                Séries
+              </button>
+              <button
+                className="text-gray-300 hover:text-white transition-colors"
+                onClick={() => setFiltros({ ...filtros, type: "person" })}
+              >
+                Artistas
+              </button>
+            </nav>
           </div>
-          <h1 className="text-2xl font-bold">
-            <span className="text-red-600">Movie</span>
-            <span className="text-gray-300">Explore</span>
-          </h1>
+
+          {/* Search + User */}
+          <div className="flex items-center space-x-4">
+            <div
+              className={`relative transition-all duration-300 ${
+                searchActive ? "w-64" : "w-48"
+              }`}
+            >
+              <BiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                value={filtros.query || ""}
+                onChange={(e) =>
+                  setFiltros({ ...filtros, query: e.target.value })
+                }
+                onClick={() => setFiltros({ ...filtros, type: "multi" })}
+                type="text"
+                className="w-full bg-gray-800 text-white pl-10 pr-4 py-2 rounded-full focus:outline-none focus:ring-1 focus:ring-red-500"
+                placeholder={searchActive ? "Continue buscando..." : "Buscar"}
+                onFocus={() => setSearchActive(true)}
+              />
+              {searchActive && (
+                <button
+                  onClick={handleClearFilters}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+
+            <div className="relative">
+              <MenuUser />
+            </div>
+          </div>
         </div>
 
-        <div className="flex-1 w-full">
-          <div className="relative">
-            <BiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-            <input
-              value={filtros.query || ""}
-              onChange={(e) => setFiltros({ ...filtros, query: e.target.value })}
-              type="text"
-              className="w-full p-3 pl-10 rounded-full bg-[#111111] text-white border border-gray-800 focus:outline-none focus:ring-2 focus:ring-red-600 placeholder-gray-600 transition-all"
-              placeholder="Buscar filmes, séries, animes..."
-            />
+        {/* Mobile Layout */}
+        <div className="md:hidden flex items-center justify-between h-16">
+          {/* Logo */}
+          <Logo />
+
+          {/* Icons */}
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={() => setSearchActive(!searchActive)}
+              className="text-gray-300 hover:text-white"
+            >
+              <BiSearch size={20} />
+            </button>
+            <MenuUser />
           </div>
         </div>
+
+        {/* Mobile Search */}
+        {searchActive && (
+          <div className="md:hidden pb-4">
+            <div className="relative">
+              <BiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                value={filtros.query || ""}
+                onChange={(e) =>
+                  setFiltros({ ...filtros, query: e.target.value })
+                }
+                type="text"
+                className="w-full bg-gray-800 text-white pl-10 pr-4 py-2 rounded-full focus:outline-none"
+                placeholder="Buscar filmes, séries..."
+                autoFocus
+              />
+              <button
+                onClick={handleClearFilters}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );

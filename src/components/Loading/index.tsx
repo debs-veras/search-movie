@@ -1,4 +1,3 @@
-// components/LoadingFilmes.tsx
 import { FaFilm } from 'react-icons/fa';
 
 type Props = {

@@ -12,7 +12,8 @@ function handleError(error: any) {
   return {
     success: false,
     tipo: "error",
-    status_message: error.response.data.status_message || "Erro ao realizar operação",
+    status_message:
+      error.response.data.status_message || "Erro ao realizar operação",
   };
 }
 
@@ -53,11 +54,12 @@ export const getRequest = async (url: string) => {
   }
 };
 
-export const deleteRequest = async (url: string) => {
+// apiRequest.ts (ou onde está deleteRequest)
+export const deleteRequest = async (url: string, data?: any) => {
   const axios = instance();
 
   try {
-    const response = await axios.delete(url);
+    const response = await axios.delete(url, { data });
     return response.data;
   } catch (error: any) {
     return handleError(error);

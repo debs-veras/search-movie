@@ -10,7 +10,7 @@ export default function Footer() {
             <span className="text-xl font-bold">MovieExplore</span>
           </div>
 
-          <div className="flex gap-6">
+          <div className="flex gap-6 flex-wrap ">
             <a
               href="#"
               className="text-gray-400 hover:text-red-600 transition-colors"
