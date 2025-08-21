@@ -1,19 +1,10 @@
 import instance from "../configAxios";
 
 function handleError(error: any) {
-  if (!error.response) {
-    return {
-      success: false,
-      tipo: "error",
-      status_message: "Não foi possível conectar ao servidor.",
-    };
-  }
-
   return {
     success: false,
     tipo: "error",
-    status_message:
-      error.response.data.status_message || "Erro ao realizar operação",
+    data: error.response.data.status_message || "Erro ao realizar operação",
   };
 }
 
@@ -36,8 +27,8 @@ export const postRequest = async (url: string, obj: any) => {
   try {
     const response = await axios.post(url, obj);
     return {
-      dados: response.data,
-      ...response.data,
+      data: response.data,
+      success: true,
     };
   } catch (error: any) {
     return handleError(error);
@@ -48,13 +39,12 @@ export const getRequest = async (url: string) => {
   const axios = instance();
   try {
     const response = await axios.get(url);
-    return response.data;
+    return { data: response.data, success: true };
   } catch (error: any) {
     return handleError(error);
   }
 };
 
-// apiRequest.ts (ou onde está deleteRequest)
 export const deleteRequest = async (url: string, data?: any) => {
   const axios = instance();
 

@@ -1,7 +1,7 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import SearchPage from "../pages/SearchMovie";
+import SearchPage from "./components/SearchMovie";
 import useToastLoading from "../hooks/useToastLoading";
 import { userValideteSession } from "../services/authRequest";
 import { useEffect, useState } from "react";

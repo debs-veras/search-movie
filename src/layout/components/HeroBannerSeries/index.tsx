@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
-import { getSeriesByCategory } from "../../services/series";
 import { FaPlay, FaPlus, FaInfoCircle } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { getSeriesByCategory } from "../../../services/series";
 
 interface Series {
   id: number;
@@ -24,7 +24,7 @@ interface Genre {
 
 const TRANSITION_DURATION = 10000; // 10 segundos
 
-export default function HeroBanner() {
+export default function HeroBannerSeries() {
   const [series, setSeries] = useState<Series | null>(null);
   const [genres, setGenres] = useState<Genre[]>([]);
   const [isHovered, setIsHovered] = useState(false);
@@ -109,21 +109,20 @@ export default function HeroBanner() {
 
   const getCountryName = (countryCode?: string) => {
     if (!countryCode) return "";
-    // Aqui você poderia implementar uma lógica para converter código de país para nome
     return countryCode;
   };
 
   if (error) {
     return (
-      <div className="w-full h-[85vh] flex items-center justify-center bg-gray-900 text-white">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-2">Error loading content</h2>
-          <p className="mb-4">{error}</p>
+      <div className="w-full h-[60vh] md:h-[85vh] flex items-center justify-center bg-gray-900 text-white">
+        <div className="text-center px-4">
+          <h2 className="text-xl md:text-2xl font-bold mb-2">Erro ao carregar conteúdo</h2>
+          <p className="mb-4 text-sm md:text-base">{error}</p>
           <button 
             onClick={loadRandomSeries}
-            className="px-4 py-2 bg-red-600 rounded hover:bg-red-700 transition"
+            className="px-4 py-2 bg-red-600 rounded hover:bg-red-700 transition text-sm md:text-base"
           >
-            Try Again
+            Tentar Novamente
           </button>
         </div>
       </div>
@@ -132,7 +131,7 @@ export default function HeroBanner() {
 
   return (
     <div
-      className="relative w-full h-[85vh] overflow-hidden group"
+      className="relative w-full h-[60vh] sm:h-[70vh] md:h-[85vh] overflow-hidden group"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -162,16 +161,16 @@ export default function HeroBanner() {
       </AnimatePresence>
 
       {/* Conteúdo */}
-      <div className="relative z-20 h-full flex flex-col justify-end px-6 md:px-16 py-12">
+      <div className="relative z-20 h-full flex flex-col justify-end px-4 sm:px-8 md:px-12 lg:px-16 py-8 md:py-12">
         {isLoading && !series ? (
           <div className="max-w-2xl lg:max-w-3xl xl:max-w-4xl">
             <div className="animate-pulse">
-              <div className="h-12 w-64 bg-gray-700 rounded mb-6"></div>
-              <div className="h-4 w-32 bg-gray-700 rounded mb-4"></div>
-              <div className="h-24 w-full bg-gray-700 rounded mb-6"></div>
-              <div className="flex gap-4 mb-6">
-                <div className="h-12 w-32 bg-gray-700 rounded-full"></div>
-                <div className="h-12 w-32 bg-gray-700 rounded-full"></div>
+              <div className="h-8 sm:h-10 md:h-12 w-48 sm:w-56 md:w-64 bg-gray-700 rounded mb-4 sm:mb-6"></div>
+              <div className="h-3 sm:h-4 w-24 sm:w-32 bg-gray-700 rounded mb-3 sm:mb-4"></div>
+              <div className="h-16 sm:h-20 md:h-24 w-full bg-gray-700 rounded mb-4 sm:mb-6"></div>
+              <div className="flex gap-3 sm:gap-4 mb-4 sm:mb-6">
+                <div className="h-10 sm:h-12 w-24 sm:w-32 bg-gray-700 rounded-full"></div>
+                <div className="h-10 sm:h-12 w-24 sm:w-32 bg-gray-700 rounded-full"></div>
               </div>
             </div>
           </div>
@@ -186,20 +185,20 @@ export default function HeroBanner() {
               <img
                 src={`https://image.tmdb.org/t/p/original${series.logo_path}`}
                 alt={series.name}
-                className="mb-6 max-h-24 object-contain drop-shadow-xl"
+                className="mb-4 sm:mb-6 max-h-16 sm:max-h-20 md:max-h-24 object-contain drop-shadow-xl"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = "none";
                 }}
               />
             ) : (
-              <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-4 drop-shadow-xl">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-white mb-3 sm:mb-4 drop-shadow-xl">
                 {series.name}
               </h1>
             )}
 
             {/* Detalhes */}
-            <div className="flex flex-wrap gap-3 items-center text-sm text-white/80 mb-5">
-              <span className="bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+            <div className="flex flex-wrap gap-2 sm:gap-3 items-center text-xs sm:text-sm text-white/80 mb-3 sm:mb-5">
+              <span className="bg-red-600 text-white text-xs font-semibold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full shadow-sm">
                 ⭐ {series.vote_average.toFixed(1)}
               </span>
               {series.first_air_date && (
@@ -208,40 +207,40 @@ export default function HeroBanner() {
               {series.origin_country?.[0] && (
                 <span>{getCountryName(series.origin_country[0])}</span>
               )}
-              <span className="border border-white/30 px-2 py-1 rounded-full">HD</span>
-              <span className="bg-white/10 px-2 py-1 rounded-full">16+</span>
+              <span className="border border-white/30 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm">HD</span>
+              <span className="bg-white/10 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm">16+</span>
             </div>
 
             {/* Descrição */}
-            <p className="text-white/90 text-base md:text-lg leading-relaxed line-clamp-3 mb-6">
-              {series.overview || "No description available."}
+            <p className="text-white/90 text-sm sm:text-base md:text-lg leading-relaxed line-clamp-2 sm:line-clamp-3 mb-4 sm:mb-6">
+              {series.overview || "Descrição não disponível."}
             </p>
 
             {/* Ações */}
-            <div className="flex flex-wrap gap-4 mb-6">
+            <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4 mb-4 sm:mb-6">
               <button
                 onClick={handleWatchNow}
-                className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95"
+                className="flex items-center gap-1 sm:gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 text-xs sm:text-sm md:text-base"
               >
-                <FaPlay /> Assistir Agora
+                <FaPlay className="text-xs sm:text-sm md:text-base" /> Assistir Agora
               </button>
-              <button className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold px-6 py-3 rounded-full backdrop-blur-md border border-white/20 transition-all hover:scale-105 active:scale-95">
-                <FaPlus /> Minha Lista
+              <button className="flex items-center gap-1 sm:gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-full backdrop-blur-md border border-white/20 transition-all hover:scale-105 active:scale-95 text-xs sm:text-sm md:text-base">
+                <FaPlus className="text-xs sm:text-sm md:text-base" /> Minha Lista
               </button>
-              <button className="p-3 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-md border border-white/20 transition-all hover:scale-105 active:scale-95">
-                <FaInfoCircle className="text-white" />
+              <button className="p-2 sm:p-3 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-md border border-white/20 transition-all hover:scale-105 active:scale-95">
+                <FaInfoCircle className="text-white text-sm sm:text-base" />
               </button>
             </div>
 
             {/* Gêneros */}
             {series.genre_ids && (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1 sm:gap-2">
                 {series.genre_ids.slice(0, 3).map((id) => {
                   const genre = genres.find((g) => g.id === id);
                   return genre ? (
                     <span
                       key={id}
-                      className="bg-white/10 border border-white/10 text-white/80 text-xs px-3 py-1 rounded-full"
+                      className="bg-white/10 border border-white/10 text-white/80 text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full"
                     >
                       {genre.name}
                     </span>
@@ -254,7 +253,7 @@ export default function HeroBanner() {
       </div>
 
       {/* Barra de progresso animada */}
-      <div className="absolute bottom-0 left-0 w-full h-1.5 z-30 bg-white/10">
+      <div className="absolute bottom-0 left-0 w-full h-1 sm:h-1.5 z-30 bg-white/10">
         <motion.div
           className="h-full bg-red-600"
           initial={{ width: "0%" }}
@@ -265,14 +264,14 @@ export default function HeroBanner() {
 
       {/* Controles de navegação */}
       {isHovered && series && (
-        <div className="absolute z-20 top-1/2 left-0 right-0 flex justify-between px-4 transform -translate-y-1/2">
+        <div className="absolute z-20 top-1/2 left-0 right-0 flex justify-between px-2 sm:px-4 transform -translate-y-1/2">
           <button
             onClick={loadRandomSeries}
-            className="p-3 bg-black/50 hover:bg-black/70 rounded-full backdrop-blur-md border border-white/20 transition-all hover:scale-110"
+            className="p-2 sm:p-3 bg-black/50 hover:bg-black/70 rounded-full backdrop-blur-md border border-white/20 transition-all hover:scale-110"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-white"
+              className="h-4 w-4 sm:h-6 sm:w-6 text-white"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -287,11 +286,11 @@ export default function HeroBanner() {
           </button>
           <button
             onClick={loadRandomSeries}
-            className="p-3 bg-black/50 hover:bg-black/70 rounded-full backdrop-blur-md border border-white/20 transition-all hover:scale-110"
+            className="p-2 sm:p-3 bg-black/50 hover:bg-black/70 rounded-full backdrop-blur-md border border-white/20 transition-all hover:scale-110"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 text-white"
+              className="h-4 w-4 sm:h-6 sm:w-6 text-white"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"

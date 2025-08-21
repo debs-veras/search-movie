@@ -1,10 +1,10 @@
 import { BiSearch } from "react-icons/bi";
-import { useSearch } from "../../context/FiltroContext";
+import { useSearch } from "../../../context/FiltroContext";
 import { GiPopcorn } from "react-icons/gi";
-import CardPerson from "../../components/CardPerson";
-import CardSerie from "../../components/CardSerie";
-import CardMovie from "../../components/CardMovie";
-import CardMulti from "../../components/CardMulti";
+import CardPerson from "../../../components/CardPerson";
+import CardSerie from "../../../components/CardSerie";
+import CardMovie from "../../../components/CardMovie";
+import CardMulti from "../../../components/CardMulti";
 
 export default function SearchPage() {
   const {
@@ -63,10 +63,8 @@ export default function SearchPage() {
                     <CardMulti key={item.id} item={item} />
                   ))}
               </div>
-
-              {/* Âncora invisível para scroll suave */}
+              
               <div id="load-more-anchor" className="mt-4" />
-
               {hasMore && (
                 <div className="flex justify-center mt-6">
                   <button

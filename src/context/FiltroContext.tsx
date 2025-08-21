@@ -6,7 +6,7 @@ import {
   SerieResult,
 } from "../types/listResultsData.d";
 import { SearchFormInputs } from "../types/searchFormInputs.d";
-import { getBuscaFilme } from "../services/searchMovieRequest";
+import { getSearchMovie } from "../services/searchRequest";
 import useDebounce from "../hooks/useDebounce";
 
 type SearchContextType = {
@@ -37,7 +37,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
-
+   console.log("filtros", filtros);
   const buscaMovieData = async (resetPage = true) => {
     if (!filtros.query || !filtros.type) {
       setHasMore(false);
@@ -53,7 +53,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     params.append("page", String(currentPage));
 
     try {
-      const response = await getBuscaFilme(
+      const response = await getSearchMovie(
         params.toString(),
         filtros.type ?? ""
       );

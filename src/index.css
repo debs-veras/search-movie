@@ -10,7 +10,6 @@ body {
 @theme {
   --breakpoint-xxs: 20rem;
   --breakpoint-xs: 30rem;
-
 }
 
 
@@ -18,7 +17,6 @@ body {
   @apply antialiased;
 }
 
-/* Efeito de vidro fosco */
 .backdrop-blur-sm {
   backdrop-filter: blur(4px);
 }
