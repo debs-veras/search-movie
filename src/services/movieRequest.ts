@@ -1,4 +1,4 @@
-import { getRequest } from "../utils/axiosRequest";
+import { getRequest } from '../utils/axiosRequest';
 
 export const getReleasedSoon = async () => {
   return await getRequest(`/3/movie/upcoming`);

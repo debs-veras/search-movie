@@ -1,8 +1,8 @@
-import { useEffect, useState, useCallback } from "react";
-import { FaPlay, FaPlus, FaInfoCircle } from "react-icons/fa";
-import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { getSeriesByCategory } from "../../../services/series";
+import { useEffect, useState, useCallback } from 'react';
+import { FaPlay, FaPlus, FaInfoCircle } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { getSeriesByCategory } from '../../../services/series';
 
 interface Series {
   id: number;
@@ -38,14 +38,14 @@ export default function HeroBannerSeries() {
     const fetchGenres = async () => {
       try {
         const response = await fetch(
-          "https://api.themoviedb.org/3/genre/tv/list?api_key=c82e5a4a26d33a1e3ca752a5daa59d54&language=pt-BR"
+          'https://api.themoviedb.org/3/genre/tv/list?api_key=c82e5a4a26d33a1e3ca752a5daa59d54&language=pt-BR'
         );
-        if (!response.ok) throw new Error("Failed to fetch genres");
+        if (!response.ok) throw new Error('Failed to fetch genres');
         const data = await response.json();
         setGenres(data.genres || []);
       } catch (err) {
-        console.error("Error fetching genres:", err);
-        setError("Failed to load genres");
+        console.error('Error fetching genres:', err);
+        setError('Failed to load genres');
       }
     };
 
@@ -56,23 +56,25 @@ export default function HeroBannerSeries() {
   const loadRandomSeries = useCallback(async () => {
     setIsLoading(true);
     setProgress(0);
-    
+
     try {
-      const data = await getSeriesByCategory("popular");
-      if (!data.results) throw new Error("No series found");
-      
+      const data = await getSeriesByCategory('popular');
+      if (!data.results) throw new Error('No series found');
+
       const validSeries = data.results.filter(
         (s: Series) => s.backdrop_path && s.poster_path
       );
-      
-      if (validSeries.length === 0) throw new Error("No valid series available");
-      
-      const random = validSeries[Math.floor(Math.random() * validSeries.length)];
+
+      if (validSeries.length === 0)
+        throw new Error('No valid series available');
+
+      const random =
+        validSeries[Math.floor(Math.random() * validSeries.length)];
       setSeries(random);
       setError(null);
     } catch (err) {
-      console.error("Error loading series:", err);
-      setError("Failed to load series");
+      console.error('Error loading series:', err);
+      setError('Failed to load series');
     } finally {
       setIsLoading(false);
     }
@@ -87,7 +89,9 @@ export default function HeroBannerSeries() {
     }, TRANSITION_DURATION);
 
     const progressInterval = setInterval(() => {
-      setProgress((prev) => (prev >= 100 ? 0 : prev + (100 / (TRANSITION_DURATION / 100))));
+      setProgress((prev) =>
+        prev >= 100 ? 0 : prev + 100 / (TRANSITION_DURATION / 100)
+      );
     }, 100);
 
     return () => {
@@ -103,12 +107,12 @@ export default function HeroBannerSeries() {
   };
 
   const formatDate = (dateString?: string) => {
-    if (!dateString) return "";
+    if (!dateString) return '';
     return new Date(dateString).getFullYear();
   };
 
   const getCountryName = (countryCode?: string) => {
-    if (!countryCode) return "";
+    if (!countryCode) return '';
     return countryCode;
   };
 
@@ -116,9 +120,11 @@ export default function HeroBannerSeries() {
     return (
       <div className="w-full h-[60vh] md:h-[85vh] flex items-center justify-center bg-gray-900 text-white">
         <div className="text-center px-4">
-          <h2 className="text-xl md:text-2xl font-bold mb-2">Erro ao carregar conteúdo</h2>
+          <h2 className="text-xl md:text-2xl font-bold mb-2">
+            Erro ao carregar conteúdo
+          </h2>
           <p className="mb-4 text-sm md:text-base">{error}</p>
-          <button 
+          <button
             onClick={loadRandomSeries}
             className="px-4 py-2 bg-red-600 rounded hover:bg-red-700 transition text-sm md:text-base"
           >
@@ -148,7 +154,7 @@ export default function HeroBannerSeries() {
           >
             <div
               className={`absolute inset-0 bg-cover bg-center transition-all duration-1000 ease-out ${
-                isHovered ? "scale-105 opacity-80" : "scale-100 opacity-100"
+                isHovered ? 'scale-105 opacity-80' : 'scale-100 opacity-100'
               }`}
               style={{
                 backgroundImage: `url(https://image.tmdb.org/t/p/original${series.backdrop_path})`,
@@ -187,7 +193,7 @@ export default function HeroBannerSeries() {
                 alt={series.name}
                 className="mb-4 sm:mb-6 max-h-16 sm:max-h-20 md:max-h-24 object-contain drop-shadow-xl"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
+                  (e.target as HTMLImageElement).style.display = 'none';
                 }}
               />
             ) : (
@@ -207,13 +213,17 @@ export default function HeroBannerSeries() {
               {series.origin_country?.[0] && (
                 <span>{getCountryName(series.origin_country[0])}</span>
               )}
-              <span className="border border-white/30 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm">HD</span>
-              <span className="bg-white/10 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm">16+</span>
+              <span className="border border-white/30 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm">
+                HD
+              </span>
+              <span className="bg-white/10 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm">
+                16+
+              </span>
             </div>
 
             {/* Descrição */}
             <p className="text-white/90 text-sm sm:text-base md:text-lg leading-relaxed line-clamp-2 sm:line-clamp-3 mb-4 sm:mb-6">
-              {series.overview || "Descrição não disponível."}
+              {series.overview || 'Descrição não disponível.'}
             </p>
 
             {/* Ações */}
@@ -222,10 +232,12 @@ export default function HeroBannerSeries() {
                 onClick={handleWatchNow}
                 className="flex items-center gap-1 sm:gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 text-xs sm:text-sm md:text-base"
               >
-                <FaPlay className="text-xs sm:text-sm md:text-base" /> Assistir Agora
+                <FaPlay className="text-xs sm:text-sm md:text-base" /> Assistir
+                Agora
               </button>
               <button className="flex items-center gap-1 sm:gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold px-3 sm:px-4 md:px-6 py-2 sm:py-3 rounded-full backdrop-blur-md border border-white/20 transition-all hover:scale-105 active:scale-95 text-xs sm:text-sm md:text-base">
-                <FaPlus className="text-xs sm:text-sm md:text-base" /> Minha Lista
+                <FaPlus className="text-xs sm:text-sm md:text-base" /> Minha
+                Lista
               </button>
               <button className="p-2 sm:p-3 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-md border border-white/20 transition-all hover:scale-105 active:scale-95">
                 <FaInfoCircle className="text-white text-sm sm:text-base" />
@@ -256,7 +268,7 @@ export default function HeroBannerSeries() {
       <div className="absolute bottom-0 left-0 w-full h-1 sm:h-1.5 z-30 bg-white/10">
         <motion.div
           className="h-full bg-red-600"
-          initial={{ width: "0%" }}
+          initial={{ width: '0%' }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.1 }}
         />

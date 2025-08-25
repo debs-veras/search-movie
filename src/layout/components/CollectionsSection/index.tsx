@@ -1,10 +1,16 @@
-import { useEffect, useState } from "react";
-import { FaChevronLeft, FaChevronRight, FaPlay, FaPlus, FaFire } from "react-icons/fa";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Autoplay } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import axios from "axios";
+import { useEffect, useState } from 'react';
+import {
+  FaChevronLeft,
+  FaChevronRight,
+  FaPlay,
+  FaPlus,
+  FaFire,
+} from 'react-icons/fa';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import axios from 'axios';
 
 interface Collection {
   id: number;
@@ -21,8 +27,8 @@ interface Movie {
   poster_path: string;
 }
 
-const API_KEY = "c82e5a4a26d33a1e3ca752a5daa59d54";
-const BASE_URL = "https://api.themoviedb.org/3";
+const API_KEY = 'c82e5a4a26d33a1e3ca752a5daa59d54';
+const BASE_URL = 'https://api.themoviedb.org/3';
 
 export default function CollectionsSection() {
   const [collections, setCollections] = useState<Collection[]>([]);
@@ -45,7 +51,7 @@ export default function CollectionsSection() {
           axios.get(`${BASE_URL}/collection/${id}`, {
             params: {
               api_key: API_KEY,
-              language: "pt-BR",
+              language: 'pt-BR',
             },
           })
         );
@@ -55,7 +61,7 @@ export default function CollectionsSection() {
 
         setCollections(collectionsData);
       } catch (err) {
-        console.error("Erro ao buscar coleções:", err);
+        console.error('Erro ao buscar coleções:', err);
       } finally {
         setLoading(false);
       }
@@ -104,8 +110,8 @@ export default function CollectionsSection() {
         <Swiper
           modules={[Navigation, Autoplay]}
           navigation={{
-            nextEl: ".collection-swiper-button-next",
-            prevEl: ".collection-swiper-button-prev",
+            nextEl: '.collection-swiper-button-next',
+            prevEl: '.collection-swiper-button-prev',
           }}
           autoplay={{
             delay: 5000,
@@ -121,7 +127,10 @@ export default function CollectionsSection() {
           className="relative"
         >
           {collections.map((collection) => (
-            <SwiperSlide key={collection.id} className="rounded-xl overflow-hidden">
+            <SwiperSlide
+              key={collection.id}
+              className="rounded-xl overflow-hidden"
+            >
               <div className="relative group rounded-xl overflow-hidden border border-gray-800 hover:border-red-600 transition-all duration-300 h-80">
                 {/* Imagem de fundo */}
                 <img

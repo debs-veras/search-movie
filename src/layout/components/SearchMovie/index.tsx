@@ -1,10 +1,10 @@
-import { BiSearch } from "react-icons/bi";
-import { useSearch } from "../../../context/FiltroContext";
-import { GiPopcorn } from "react-icons/gi";
-import CardPerson from "../../../components/CardPerson";
-import CardSerie from "../../../components/CardSerie";
-import CardMovie from "../../../components/CardMovie";
-import CardMulti from "../../../components/CardMulti";
+import { BiSearch } from 'react-icons/bi';
+import { useSearch } from '../../../context/FiltroContext';
+import { GiPopcorn } from 'react-icons/gi';
+import CardPerson from '../../../components/CardPerson';
+import CardSerie from '../../../components/CardSerie';
+import CardMovie from '../../../components/CardMovie';
+import CardMulti from '../../../components/CardMulti';
 
 export default function SearchPage() {
   const {
@@ -18,7 +18,7 @@ export default function SearchPage() {
     isFetchingMore,
     filtros,
   } = useSearch();
- 
+
   return (
     <section className="container mx-auto p-6">
       {loading && !isFetchingMore ? (
@@ -46,24 +46,24 @@ export default function SearchPage() {
           (listMulti && listMulti.length > 0) ? (
             <>
               <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                {filtros.type === "person" &&
+                {filtros.type === 'person' &&
                   listPerson?.map((item) => (
                     <CardPerson key={item.id} person={item} />
                   ))}
-                {filtros.type === "tv" &&
+                {filtros.type === 'tv' &&
                   listSerie?.map((item) => (
                     <CardSerie key={item.id} serie={item} />
                   ))}
-                {filtros.type === "movie" &&
+                {filtros.type === 'movie' &&
                   listMovie?.map((item) => (
                     <CardMovie key={item.id} movie={item} />
                   ))}
-                {filtros.type === "multi" &&
+                {filtros.type === 'multi' &&
                   listMulti?.map((item) => (
                     <CardMulti key={item.id} item={item} />
                   ))}
               </div>
-              
+
               <div id="load-more-anchor" className="mt-4" />
               {hasMore && (
                 <div className="flex justify-center mt-6">
@@ -72,10 +72,10 @@ export default function SearchPage() {
                     onClick={async () => {
                       await fetchMore();
                       const anchor =
-                        document.getElementById("load-more-anchor");
+                        document.getElementById('load-more-anchor');
                       anchor?.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start",
+                        behavior: 'smooth',
+                        block: 'start',
                       });
                     }}
                     className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full shadow"

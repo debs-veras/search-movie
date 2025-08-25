@@ -1,21 +1,21 @@
 //Icons
-import { TbVaccine } from "react-icons/tb";
-import { FiZap } from "react-icons/fi";
-import { FaClapperboard } from "react-icons/fa6";
-import { LuAlignCenterVertical } from "react-icons/lu";
-import TrendingHero from "../../layout/components/TrendingHero";
-import Banner from "../../layout/components/Banner";
-import ReleasedSoon from "../../layout/components/ReleasedSoon";
-import { useEffect } from "react";
-import { useSearch } from "../../context/FiltroContext";
-import CollectionsSection from "../../layout/components/CollectionsSection";
+import { TbVaccine } from 'react-icons/tb';
+import { FiZap } from 'react-icons/fi';
+import { FaClapperboard } from 'react-icons/fa6';
+import { LuAlignCenterVertical } from 'react-icons/lu';
+import TrendingHero from '../../layout/components/TrendingHero';
+import Banner from '../../layout/components/Banner';
+import ReleasedSoon from '../../layout/components/ReleasedSoon';
+import { useEffect } from 'react';
+import { useSearch } from '../../context/FiltroContext';
+import CollectionsSection from '../../layout/components/CollectionsSection';
 
 export default function HomePage() {
   const { setFiltros } = useSearch();
 
   useEffect(() => {
-    setFiltros({ query: "", type: "multi" });
-  }, []);
+    setFiltros({ query: '', type: 'multi' });
+  }, [setFiltros]);
 
   return (
     <div className="max-w-[2080px] mx-auto">
@@ -35,27 +35,27 @@ export default function HomePage() {
           {[
             {
               icon: <FaClapperboard size={24} />,
-              title: "Clássicos do Cinema",
-              count: "356",
-              color: "red",
+              title: 'Clássicos do Cinema',
+              count: '356',
+              color: 'red',
             },
             {
               icon: <TbVaccine size={24} />,
-              title: "Séries Premiadas",
-              count: "189",
-              color: "blue",
+              title: 'Séries Premiadas',
+              count: '189',
+              color: 'blue',
             },
             {
               icon: <FiZap size={24} />,
-              title: "Animes Populares",
-              count: "142",
-              color: "purple",
+              title: 'Animes Populares',
+              count: '142',
+              color: 'purple',
             },
             {
               icon: <LuAlignCenterVertical size={24} />,
-              title: "Lançamentos",
-              count: "87",
-              color: "green",
+              title: 'Lançamentos',
+              count: '87',
+              color: 'green',
             },
           ].map((cat) => (
             <div
@@ -88,20 +88,20 @@ export default function HomePage() {
 
         <div className="flex flex-wrap gap-3">
           {[
-            "Ação",
-            "Aventura",
-            "Animação",
-            "Comédia",
-            "Crime",
-            "Documentário",
-            "Drama",
-            "Fantasia",
-            "Ficção Científica",
-            "Terror",
-            "Mistério",
-            "Romance",
-            "Suspense",
-            "Anime",
+            'Ação',
+            'Aventura',
+            'Animação',
+            'Comédia',
+            'Crime',
+            'Documentário',
+            'Drama',
+            'Fantasia',
+            'Ficção Científica',
+            'Terror',
+            'Mistério',
+            'Romance',
+            'Suspense',
+            'Anime',
           ].map((genre) => (
             <button
               key={genre}

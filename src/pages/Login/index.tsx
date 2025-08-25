@@ -1,16 +1,15 @@
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigate } from 'react-router-dom';
 import {
-  GiFilmProjector,
   GiFilmStrip,
   GiClapperboard,
   GiTicket,
   GiDirectorChair,
   GiFilmSpool,
-} from "react-icons/gi";
+} from 'react-icons/gi';
 import {
   FaEye,
   FaEyeSlash,
@@ -21,50 +20,50 @@ import {
   FaTheaterMasks,
   FaPhotoVideo,
   FaVideo,
-} from "react-icons/fa";
+} from 'react-icons/fa';
 import {
   MdLocalMovies,
   MdMovieFilter,
   MdMovie,
   MdOutlineSlowMotionVideo,
-} from "react-icons/md";
+} from 'react-icons/md';
 import {
   BsStars,
   BsCameraReels,
   BsFilm,
   BsTicketPerforated,
   BsCollectionPlay,
-} from "react-icons/bs";
-import { BiMoviePlay, BiCameraMovie } from "react-icons/bi";
-import { IoMdFilm } from "react-icons/io";
-import useToastLoading from "../../hooks/useToastLoading";
+} from 'react-icons/bs';
+import { BiMoviePlay, BiCameraMovie } from 'react-icons/bi';
+import { IoMdFilm } from 'react-icons/io';
+import useToastLoading from '../../hooks/useToastLoading';
 import {
   userAuthRequestToken,
   userCreateSession,
   userValidateLoginSession,
-} from "../../services/authRequest";
-import Logo from "../../components/Logo";
+} from '../../services/authRequest';
+import Logo from '../../components/Logo';
 
 const loginSchema = z.object({
-  username: z.string().min(1, "Usuário é obrigatório"),
-  password: z.string().min(1, "Senha é obrigatória"),
+  username: z.string().min(1, 'Usuário é obrigatório'),
+  password: z.string().min(1, 'Senha é obrigatória'),
 });
 
 const movieQuotes = [
-  "May the Force be with you. - Star Wars",
+  'May the Force be with you. - Star Wars',
   "Here's looking at you, kid. - Casablanca",
   "You're gonna need a bigger boat. - Jaws",
-  "My precious. - The Lord of the Rings",
-  "Just keep swimming. - Finding Nemo",
+  'My precious. - The Lord of the Rings',
+  'Just keep swimming. - Finding Nemo',
   "I'll be back. - The Terminator",
 ];
 
 const genres = [
-  { name: "Ação", icon: <FaStar className="text-red-500" /> },
-  { name: "Drama", icon: <MdMovieFilter className="text-blue-400" /> },
-  { name: "Comédia", icon: <FaTheaterMasks className="text-yellow-400" /> },
-  { name: "Ficção", icon: <BsStars className="text-purple-400" /> },
-  { name: "Terror", icon: <GiClapperboard className="text-green-400" /> },
+  { name: 'Ação', icon: <FaStar className="text-red-500" /> },
+  { name: 'Drama', icon: <MdMovieFilter className="text-blue-400" /> },
+  { name: 'Comédia', icon: <FaTheaterMasks className="text-yellow-400" /> },
+  { name: 'Ficção', icon: <BsStars className="text-purple-400" /> },
+  { name: 'Terror', icon: <GiClapperboard className="text-green-400" /> },
 ];
 
 export default function Login() {
@@ -76,7 +75,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const [currentQuote, setCurrentQuote] = useState("");
+  const [currentQuote, setCurrentQuote] = useState('');
   const toastLoading = useToastLoading();
 
   useEffect(() => {
@@ -93,7 +92,7 @@ export default function Login() {
 
   const handleLogin = handleSubmit(async (dados) => {
     setLoading(true);
-    toastLoading({ mensagem: "Verificando usuário" });
+    toastLoading({ mensagem: 'Verificando usuário' });
     let response: any;
     response = await userAuthRequestToken();
     if (response.data.success) {
@@ -102,14 +101,16 @@ export default function Login() {
         password: dados.password,
         request_token: response.data.request_token,
       });
+      console.log(response);
       if (response.success) {
         response = await userCreateSession(response.data.request_token);
         if (response.success) {
-          localStorage.setItem("@session_id", response.data.session_id);
+          localStorage.setItem('@session_id', response.data.session_id);
+          localStorage.setItem('@user', dados.username);
           toastLoading({
-            mensagem: "Login realizado com sucesso",
-            tipo: "success",
-            onClose: () => navigate("/"),
+            mensagem: 'Login realizado com sucesso',
+            tipo: 'success',
+            onClose: () => navigate('/'),
           });
         }
       }
@@ -155,10 +156,10 @@ export default function Login() {
               key={i}
               className={`absolute ${
                 i % 3 === 0
-                  ? "text-red-400"
+                  ? 'text-red-400'
                   : i % 3 === 1
-                  ? "text-blue-400"
-                  : "text-green-400"
+                    ? 'text-blue-400'
+                    : 'text-green-400'
               } opacity-15 text-4xl animate-float`}
               style={{
                 top: `${Math.random() * 100}%`,
@@ -200,7 +201,7 @@ export default function Login() {
             <div className="flex items-center bg-gray-800/50 rounded-lg px-3 border border-gray-700/50 group-hover:border-blue-500/50 transition-all duration-300 shadow-inner">
               <input
                 type="text"
-                {...register("username")}
+                {...register('username')}
                 className="w-full p-3 bg-transparent text-white placeholder-gray-500 focus:outline-none"
                 placeholder="Seu nome de usuário"
               />
@@ -219,8 +220,8 @@ export default function Login() {
             </label>
             <div className="flex items-center bg-gray-800/50 rounded-lg px-3 border border-gray-700/50 group-hover:border-red-500/50 transition-all duration-300 shadow-inner">
               <input
-                type={showPassword ? "text" : "password"}
-                {...register("password")}
+                type={showPassword ? 'text' : 'password'}
+                {...register('password')}
                 className="w-full p-3 bg-transparent text-white placeholder-gray-500 focus:outline-none"
                 placeholder="Sua senha secreta"
               />
@@ -247,7 +248,7 @@ export default function Login() {
             className="w-full bg-gradient-to-r from-red-600 to-blue-700 hover:from-red-500 hover:to-blue-600 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed group flex items-center justify-center relative overflow-hidden"
           >
             <span className="relative z-10">
-              {loading ? "Acessando o catálogo..." : "Acessar o Cinema"}
+              {loading ? 'Acessando o catálogo...' : 'Acessar o Cinema'}
             </span>
             <div className="absolute inset-0 bg-gradient-to-r from-red-500/0 via-white/10 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </button>

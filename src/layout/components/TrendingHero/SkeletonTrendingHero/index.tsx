@@ -1,5 +1,5 @@
-import { Navigation } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
 export default function SkeletonTrendingHero() {
   return (
@@ -16,7 +16,7 @@ export default function SkeletonTrendingHero() {
           modules={[Navigation]}
           navigation
           spaceBetween={16}
-          slidesPerView={"auto"}
+          slidesPerView={'auto'}
           className="w-full"
           breakpoints={{
             0: { slidesPerView: 1.3 },

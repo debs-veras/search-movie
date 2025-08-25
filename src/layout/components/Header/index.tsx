@@ -1,12 +1,12 @@
-import { BiSearch } from "react-icons/bi";
-import { useState, useEffect } from "react";
-import { useSearch } from "../../../context/FiltroContext";
-import Logo from "../../../components/Logo";
-import MenuUser from "../../../components/MenuUser";
-import { useNavigate } from "react-router-dom";
-import { FiMenu } from "react-icons/fi";
-import { IoClose } from "react-icons/io5";
-import { motion, AnimatePresence } from "framer-motion";
+import { BiSearch } from 'react-icons/bi';
+import { useState, useEffect } from 'react';
+import { useSearch } from '../../../context/FiltroContext';
+import Logo from '../../../components/Logo';
+import MenuUser from '../../../components/MenuUser';
+import { useNavigate } from 'react-router-dom';
+import { FiMenu } from 'react-icons/fi';
+import { IoClose } from 'react-icons/io5';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Header() {
   const { filtros, setFiltros } = useSearch();
@@ -15,12 +15,12 @@ export default function Header() {
   const navigate = useNavigate();
 
   const handleClearFilters = () => {
-    setFiltros({ query: "", type: "" });
+    setFiltros({ query: '', type: '' });
     setSearchActive(false);
   };
 
   const handleOnClickFilters = (type: string) => {
-    setFiltros({ query: "", type: type });
+    setFiltros({ query: '', type: type });
     setSearchActive(false);
     setMobileMenuOpen(false);
   };
@@ -43,7 +43,7 @@ export default function Header() {
       transition: {
         staggerChildren: 0.05,
         staggerDirection: -1,
-        when: "afterChildren",
+        when: 'afterChildren',
       },
     },
     visible: {
@@ -63,7 +63,7 @@ export default function Header() {
 
   const searchVariants = {
     hidden: { opacity: 0, height: 0 },
-    visible: { opacity: 1, height: "auto" },
+    visible: { opacity: 1, height: 'auto' },
   };
 
   return (
@@ -80,7 +80,7 @@ export default function Header() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="text-gray-300 hover:text-white transition-colors"
-                onClick={() => handleOnClickFilters("movie")}
+                onClick={() => handleOnClickFilters('movie')}
               >
                 Filmes
               </motion.button>
@@ -89,8 +89,8 @@ export default function Header() {
                 whileTap={{ scale: 0.95 }}
                 className="text-gray-300 hover:text-white transition-colors cursor-pointer"
                 onClick={() => {
-                  handleOnClickFilters("tv");
-                  navigate("/series");
+                  handleOnClickFilters('tv');
+                  navigate('/series');
                 }}
               >
                 Séries
@@ -99,7 +99,7 @@ export default function Header() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="text-gray-300 hover:text-white transition-colors"
-                onClick={() => handleOnClickFilters("person")}
+                onClick={() => handleOnClickFilters('person')}
               >
                 Artistas
               </motion.button>
@@ -110,19 +110,22 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             <motion.div
               className={`relative transition-all duration-300 ${
-                searchActive ? "w-64" : "w-48"
+                searchActive ? 'w-64' : 'w-48'
               }`}
               whileHover={{ scale: 1.02 }}
             >
               <BiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
-                value={filtros.query || ""}
+                value={filtros.query || ''}
                 onChange={(e) =>
-                  setFiltros({ ...filtros, query: e.target.value })
+                  setFiltros({
+                    ...filtros,
+                    query: e.target.value,
+                  })
                 }
                 type="text"
                 className="w-full bg-gray-800 text-white pl-10 pr-4 py-2 rounded-full focus:outline-none focus:ring-1 focus:ring-red-500"
-                placeholder={searchActive ? "Continue buscando..." : "Buscar"}
+                placeholder={searchActive ? 'Continue buscando...' : 'Buscar'}
                 onFocus={() => setSearchActive(true)}
               />
               {searchActive && (
@@ -197,7 +200,7 @@ export default function Header() {
                 <motion.button
                   variants={itemVariants}
                   className="text-gray-300 hover:text-white transition-colors py-3 px-4 text-left rounded-md hover:bg-gray-800 flex items-center"
-                  onClick={() => handleOnClickFilters("movie")}
+                  onClick={() => handleOnClickFilters('movie')}
                   whileHover={{ x: 5 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -209,8 +212,8 @@ export default function Header() {
                   variants={itemVariants}
                   className="text-gray-300 hover:text-white transition-colors py-3 px-4 text-left rounded-md hover:bg-gray-800 flex items-center"
                   onClick={() => {
-                    handleOnClickFilters("tv");
-                    navigate("/series");
+                    handleOnClickFilters('tv');
+                    navigate('/series');
                   }}
                   whileHover={{ x: 5 }}
                   whileTap={{ scale: 0.98 }}
@@ -222,7 +225,7 @@ export default function Header() {
                 <motion.button
                   variants={itemVariants}
                   className="text-gray-300 hover:text-white transition-colors py-3 px-4 text-left rounded-md hover:bg-gray-800 flex items-center"
-                  onClick={() => handleOnClickFilters("person")}
+                  onClick={() => handleOnClickFilters('person')}
                   whileHover={{ x: 5 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -247,9 +250,12 @@ export default function Header() {
               <div className="relative mt-4">
                 <BiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
-                  value={filtros.query || ""}
+                  value={filtros.query || ''}
                   onChange={(e) =>
-                    setFiltros({ ...filtros, query: e.target.value })
+                    setFiltros({
+                      ...filtros,
+                      query: e.target.value,
+                    })
                   }
                   type="text"
                   className="w-full bg-gray-800 text-white pl-10 pr-4 py-3 rounded-full focus:outline-none focus:ring-1 focus:ring-red-500"

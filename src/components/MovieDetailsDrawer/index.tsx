@@ -1,13 +1,13 @@
-import { useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-  BiCalendar, 
-  BiStar, 
-  BiTime, 
+import { useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  BiCalendar,
+  BiStar,
+  BiTime,
   BiX,
-  BiLinkExternal
-} from "react-icons/bi";
-import { FiFilm, FiTv, FiPlay } from "react-icons/fi";
+  BiLinkExternal,
+} from 'react-icons/bi';
+import { FiFilm, FiTv, FiPlay } from 'react-icons/fi';
 
 type MovieDetails = {
   Title: string;
@@ -32,17 +32,21 @@ type MovieDetailsDrawerProps = {
   onClose: () => void;
 };
 
-const MovieDetailsDrawer = ({ movie, isOpen, onClose }: MovieDetailsDrawerProps) => {
+const MovieDetailsDrawer = ({
+  movie,
+  isOpen,
+  onClose,
+}: MovieDetailsDrawerProps) => {
   // Impede scroll do body quando o drawer está aberto
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = 'auto';
     }
 
     return () => {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = 'auto';
     };
   }, [isOpen]);
 
@@ -61,22 +65,30 @@ const MovieDetailsDrawer = ({ movie, isOpen, onClose }: MovieDetailsDrawerProps)
 
           {/* Drawer */}
           <motion.div
-            initial={{ x: "100%" }}
+            initial={{ x: '100%' }}
             animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            exit={{ x: '100%' }}
+            transition={{
+              type: 'spring',
+              damping: 25,
+              stiffness: 200,
+            }}
             className="fixed inset-y-0 right-0 z-50 w-full max-w-2xl overflow-y-auto bg-gray-900 shadow-2xl"
           >
             <div className="relative h-full">
               {/* Cabeçalho com imagem */}
               <div className="relative h-80 sm:h-96 w-full">
                 <img
-                  src={movie.Poster !== "N/A" ? movie.Poster : "/placeholder-movie.jpg"}
+                  src={
+                    movie.Poster !== 'N/A'
+                      ? movie.Poster
+                      : '/placeholder-movie.jpg'
+                  }
                   alt={movie.Title}
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />
-                
+
                 <button
                   onClick={onClose}
                   className="absolute top-4 right-4 p-2 rounded-full bg-black/70 hover:bg-black transition-colors"
@@ -91,11 +103,15 @@ const MovieDetailsDrawer = ({ movie, isOpen, onClose }: MovieDetailsDrawerProps)
                 {/* Título e Metadados */}
                 <div>
                   <div className="flex justify-between items-start gap-4">
-                    <h1 className="text-2xl font-bold text-white">{movie.Title}</h1>
-                    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm ${
-                      movie.Type === "movie" ? "bg-blue-600" : "bg-purple-600"
-                    }`}>
-                      {movie.Type === "movie" ? <FiFilm /> : <FiTv />}
+                    <h1 className="text-2xl font-bold text-white">
+                      {movie.Title}
+                    </h1>
+                    <span
+                      className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm ${
+                        movie.Type === 'movie' ? 'bg-blue-600' : 'bg-purple-600'
+                      }`}
+                    >
+                      {movie.Type === 'movie' ? <FiFilm /> : <FiTv />}
                       {movie.Type}
                     </span>
                   </div>
@@ -111,7 +127,8 @@ const MovieDetailsDrawer = ({ movie, isOpen, onClose }: MovieDetailsDrawerProps)
                     )}
                     {movie.imdbRating && (
                       <span className="flex items-center gap-1">
-                        <BiStar className="text-yellow-400" /> {movie.imdbRating}/10
+                        <BiStar className="text-yellow-400" />{' '}
+                        {movie.imdbRating}/10
                       </span>
                     )}
                     {movie.Rated && (
@@ -125,7 +142,9 @@ const MovieDetailsDrawer = ({ movie, isOpen, onClose }: MovieDetailsDrawerProps)
                 {/* Sinopse */}
                 {movie.Plot && (
                   <div>
-                    <h3 className="text-lg font-semibold text-white mb-2">Sinopse</h3>
+                    <h3 className="text-lg font-semibold text-white mb-2">
+                      Sinopse
+                    </h3>
                     <p className="text-gray-300">{movie.Plot}</p>
                   </div>
                 )}
@@ -138,7 +157,7 @@ const MovieDetailsDrawer = ({ movie, isOpen, onClose }: MovieDetailsDrawerProps)
                       <p className="text-white">{movie.Genre}</p>
                     </div>
                   )}
-                  
+
                   {movie.Director && (
                     <div>
                       <h4 className="text-sm text-gray-400">Direção</h4>
@@ -166,8 +185,8 @@ const MovieDetailsDrawer = ({ movie, isOpen, onClose }: MovieDetailsDrawerProps)
                   <button className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 px-6 py-3 rounded-lg text-white font-medium transition-colors flex-1">
                     <FiPlay size={18} /> Assistir Agora
                   </button>
-                  
-                  <a 
+
+                  <a
                     href={`https://www.imdb.com/title/${movie.imdbID}`}
                     target="_blank"
                     rel="noopener noreferrer"

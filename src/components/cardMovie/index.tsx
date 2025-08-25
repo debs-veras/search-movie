@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { FiFilm } from "react-icons/fi";
-import { BiCalendar } from "react-icons/bi";
-import { API_URL_IMG_TMDB } from "../../constants/api";
-import { MovieResult } from "../../types/listResultsData.d";
-import CardActionButton from "../CardActionButton";
-import CardImageLoader from "../CardImageLoader";
+import { useState } from 'react';
+import { FiFilm } from 'react-icons/fi';
+import { BiCalendar } from 'react-icons/bi';
+import { API_URL_IMG_TMDB } from '../../constants/api';
+import { MovieResult } from '../../types/listResultsData.d';
+import CardActionButton from '../CardActionButton';
+import CardImageLoader from '../CardImageLoader';
 
 type Props = {
   movie: MovieResult;
@@ -14,7 +14,7 @@ export default function CardMovie({ movie }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  const imageUrl =`${API_URL_IMG_TMDB}w500${movie.poster_path}`;
+  const imageUrl = `${API_URL_IMG_TMDB}w500${movie.poster_path}`;
   return (
     <div
       className="group relative rounded-xl overflow-hidden shadow-md transition-transform duration-300 hover:scale-[1.03]"
@@ -26,10 +26,10 @@ export default function CardMovie({ movie }: Props) {
 
         {/* Imagem */}
         <img
-          src={hasError ? "movie.png" : imageUrl}
+          src={hasError ? 'movie.png' : imageUrl}
           alt={`Poster de ${movie.title}`}
           className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${
-            isLoading ? "opacity-0" : "opacity-100"
+            isLoading ? 'opacity-0' : 'opacity-100'
           }`}
           onLoad={() => setIsLoading(false)}
           onError={() => {
@@ -50,7 +50,7 @@ export default function CardMovie({ movie }: Props) {
             </h3>
             <div className="flex items-center gap-2 text-sm text-gray-300">
               <BiCalendar className="text-red-400" size={18} />
-              {movie.release_date || "Data indisponível"}
+              {movie.release_date || 'Data indisponível'}
             </div>
           </div>
 
@@ -64,7 +64,7 @@ export default function CardMovie({ movie }: Props) {
           <CardActionButton
             text="Ver Detalhes"
             color="red"
-            onClick={() => console.log("Assistir clicado")}
+            onClick={() => console.log('Assistir clicado')}
           />
         </div>
       </div>

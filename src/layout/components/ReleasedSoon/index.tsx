@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { FaStar } from "react-icons/fa";
-import { getReleasedSoon } from "../../../services/movieRequest";
-import ErrorSection from "../../../components/ErrorSection";
-import SkeletonReleasedSoon from "./SkeletonReleasedSoon";
+import { useEffect, useState } from 'react';
+import { FaStar } from 'react-icons/fa';
+import { getReleasedSoon } from '../../../services/movieRequest';
+import ErrorSection from '../../../components/ErrorSection';
+import SkeletonReleasedSoon from './SkeletonReleasedSoon';
 
 interface ReleasedSoon {
   id: number;
@@ -71,7 +71,7 @@ export default function ReleasedSoon() {
                 </h3>
                 <div className="text-xs xs:text-sm text-gray-300 flex items-center gap-2 drop-shadow-sm">
                   <FaStar className="text-yellow-400" />
-                  {filme.vote_average.toFixed(1)} -{" "}
+                  {filme.vote_average.toFixed(1)} -{' '}
                   {new Date(filme.release_date).toLocaleDateString()}
                 </div>
               </div>

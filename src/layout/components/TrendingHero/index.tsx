@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { FaFire, FaStar } from "react-icons/fa";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import { getTrendingHero } from "../../../services/movieRequest";
-import ErrorSection from "../../../components/ErrorSection";
-import SkeletonTrendingHero from "./SkeletonTrendingHero";
+import { useEffect, useState } from 'react';
+import { FaFire, FaStar } from 'react-icons/fa';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import { getTrendingHero } from '../../../services/movieRequest';
+import ErrorSection from '../../../components/ErrorSection';
+import SkeletonTrendingHero from './SkeletonTrendingHero';
 
 type TrendingHero = {
   id: number;
@@ -67,7 +67,7 @@ export default function TrendingHero() {
           modules={[Navigation]}
           navigation
           spaceBetween={16}
-          slidesPerView={"auto"}
+          slidesPerView={'auto'}
           className="w-full"
           breakpoints={{
             0: { slidesPerView: 1.3 },
@@ -104,7 +104,7 @@ export default function TrendingHero() {
                       </span>
                     </div>
                     <span className="text-xs text-gray-300">
-                      {movie.release_date.split("-")[0]}
+                      {movie.release_date.split('-')[0]}
                     </span>
                   </div>
                   <p className="text-sm text-gray-300 mt-2 line-clamp-3">

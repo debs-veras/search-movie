@@ -1,4 +1,4 @@
-import { GiPopcorn } from "react-icons/gi";
+import { GiPopcorn } from 'react-icons/gi';
 
 export default function Footer() {
   return (

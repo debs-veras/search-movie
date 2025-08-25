@@ -1,6 +1,6 @@
 export type MultiResult = {
   id: number;
-  media_type: "movie" | "tv" | "person";
+  media_type: 'movie' | 'tv' | 'person';
   name?: string;
   title?: string;
   overview?: string;
@@ -16,7 +16,7 @@ export type PersonResult = {
   name: string;
   profile_path: string | null;
   known_for_department: string;
-  media_type: "person";
+  media_type: 'person';
 };
 
 export type SerieResult = {
@@ -31,7 +31,7 @@ export type SerieResult = {
   origin_country: string[];
   genre_ids: number[];
   popularity: number;
-  media_type?: "tv";
+  media_type?: 'tv';
 };
 
 export type MovieResult = {
@@ -46,5 +46,5 @@ export type MovieResult = {
   vote_count: number;
   genre_ids: number[];
   popularity: number;
-  media_type?: "movie";
+  media_type?: 'movie';
 };

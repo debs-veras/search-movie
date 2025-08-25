@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { SerieResult } from "../../types/listResultsData.d";
-import { BiCalendar } from "react-icons/bi";
-import { FiTv } from "react-icons/fi";
-import { API_URL_IMG_TMDB } from "../../constants/api";
-import CardActionButton from "../CardActionButton";
-import CardImageLoader from "../CardImageLoader";
+import { useState } from 'react';
+import { SerieResult } from '../../types/listResultsData.d';
+import { BiCalendar } from 'react-icons/bi';
+import { FiTv } from 'react-icons/fi';
+import { API_URL_IMG_TMDB } from '../../constants/api';
+import CardActionButton from '../CardActionButton';
+import CardImageLoader from '../CardImageLoader';
 
 type Props = {
   serie: SerieResult;
@@ -26,10 +26,10 @@ export default function CardSerie({ serie }: Props) {
 
         {/* Imagem */}
         <img
-          src={hasError ? "serie.png" : imageUrl}
+          src={hasError ? 'serie.png' : imageUrl}
           alt={serie.name}
           className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${
-            isLoading ? "opacity-0" : "opacity-100"
+            isLoading ? 'opacity-0' : 'opacity-100'
           }`}
           onLoad={() => setIsLoading(false)}
           onError={() => {
@@ -50,7 +50,7 @@ export default function CardSerie({ serie }: Props) {
             </h3>
             <div className="flex items-center gap-2 text-sm text-gray-300">
               <BiCalendar className="text-red-400" size={18} />
-              {serie.first_air_date || "Data indisponível"}
+              {serie.first_air_date || 'Data indisponível'}
             </div>
           </div>
 
@@ -64,7 +64,7 @@ export default function CardSerie({ serie }: Props) {
           <CardActionButton
             text="Ver Detalhes"
             color="purple"
-            onClick={() => console.log("Assistir clicado")}
+            onClick={() => console.log('Assistir clicado')}
           />
         </div>
       </div>

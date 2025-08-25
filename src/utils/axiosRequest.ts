@@ -1,10 +1,10 @@
-import instance from "../configAxios";
+import instance from '../configAxios';
 
 function handleError(error: any) {
   return {
     success: false,
-    tipo: "error",
-    data: error.response.data.status_message || "Erro ao realizar operação",
+    tipo: 'error',
+    data: error.response.data.status_message || 'Erro ao realizar operação',
   };
 }
 
@@ -50,7 +50,7 @@ export const deleteRequest = async (url: string, data?: any) => {
 
   try {
     const response = await axios.delete(url, { data });
-    return response.data;
+    return { data: response.data, success: true };
   } catch (error: any) {
     return handleError(error);
   }

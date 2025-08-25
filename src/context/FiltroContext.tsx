@@ -1,13 +1,13 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from 'react';
 import {
   MovieResult,
   MultiResult,
   PersonResult,
   SerieResult,
-} from "../types/listResultsData.d";
-import { SearchFormInputs } from "../types/searchFormInputs.d";
-import { getSearchMovie } from "../services/searchRequest";
-import useDebounce from "../hooks/useDebounce";
+} from '../types/listResultsData.d';
+import { SearchFormInputs } from '../types/searchFormInputs.d';
+import { getSearchMovie } from '../services/searchRequest';
+import useDebounce from '../hooks/useDebounce';
 
 type SearchContextType = {
   filtros: SearchFormInputs;
@@ -26,8 +26,8 @@ const SearchContext = createContext({} as SearchContextType);
 
 export function SearchProvider({ children }: { children: React.ReactNode }) {
   const [filtros, setFiltros] = useState<SearchFormInputs>({
-    query: "",
-    type: "",
+    query: '',
+    type: '',
   });
   const [listMovie, setListMovie] = useState<MovieResult[] | null>(null);
   const [listPerson, setListPerson] = useState<PersonResult[] | null>(null);
@@ -37,7 +37,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
-   console.log("filtros", filtros);
+
   const buscaMovieData = async (resetPage = true) => {
     if (!filtros.query || !filtros.type) {
       setHasMore(false);
@@ -49,32 +49,32 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     else setIsFetchingMore(true);
 
     const params = new URLSearchParams();
-    params.append("query", filtros.query);
-    params.append("page", String(currentPage));
+    params.append('query', filtros.query);
+    params.append('page', String(currentPage));
 
     try {
       const response = await getSearchMovie(
         params.toString(),
-        filtros.type ?? ""
+        filtros.type ?? ''
       );
 
-      const results = response.results || [];
-      const totalPages = response.total_pages || 1;
+      const results = response.data.results || [];
+      const totalPages = response.data.total_pages || 1;
 
-      if (filtros.type === "person")
+      if (filtros.type === 'person')
         setListPerson((prev) =>
           resetPage ? results : [...(prev || []), ...results]
         );
-      if (filtros.type === "tv") {
+      if (filtros.type === 'tv') {
         setListSerie((prev) =>
           resetPage ? results : [...(prev || []), ...results]
         );
       }
-      if (filtros.type === "movie")
+      if (filtros.type === 'movie')
         setListMovie((prev) =>
           resetPage ? results : [...(prev || []), ...results]
         );
-      if (filtros.type === "multi") {
+      if (filtros.type === 'multi') {
         setListMulti((prev) =>
           resetPage ? results : [...(prev || []), ...results]
         );

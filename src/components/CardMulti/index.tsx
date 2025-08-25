@@ -1,10 +1,10 @@
-import { FiFilm, FiTv } from "react-icons/fi";
-import { BiUserCircle } from "react-icons/bi";
-import { useState } from "react";
-import { API_URL_IMG_TMDB } from "../../constants/api";
-import { MultiResult } from "../../types/listResultsData.d";
-import CardImageLoader from "../CardImageLoader";
-import CardActionButton from "../CardActionButton";
+import { FiFilm, FiTv } from 'react-icons/fi';
+import { BiUserCircle } from 'react-icons/bi';
+import { useState } from 'react';
+import { API_URL_IMG_TMDB } from '../../constants/api';
+import { MultiResult } from '../../types/listResultsData.d';
+import CardImageLoader from '../CardImageLoader';
+import CardActionButton from '../CardActionButton';
 
 type Props = {
   item: MultiResult;
@@ -14,16 +14,24 @@ export default function CardMulti({ item }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  const isPerson = item.media_type === "person";
-  const isMovie = item.media_type === "movie";
-  const isTv = item.media_type === "tv";
+  const isPerson = item.media_type === 'person';
+  const isMovie = item.media_type === 'movie';
+  const isTv = item.media_type === 'tv';
 
   const imagePath = isPerson ? item.profile_path : item.poster_path;
-  const imageDefault= isPerson ? "avatar.png" : isMovie ? "movie.png" : "serie.png";
+  const imageDefault = isPerson
+    ? 'avatar.png'
+    : isMovie
+      ? 'movie.png'
+      : 'serie.png';
   const imageUrl = `${API_URL_IMG_TMDB}w500${imagePath}`;
 
-  const title = item.title || item.name || "Título Indisponível";
-  const subtitle = item.release_date || item.first_air_date || item.known_for_department || "Data Indisponível";
+  const title = item.title || item.name || 'Título Indisponível';
+  const subtitle =
+    item.release_date ||
+    item.first_air_date ||
+    item.known_for_department ||
+    'Data Indisponível';
 
   return (
     <div className="group relative rounded-xl overflow-hidden shadow-md hover:shadow-lg hover:shadow-black/30 transition-transform duration-300 hover:scale-[1.03] bg-black">
@@ -36,7 +44,7 @@ export default function CardMulti({ item }: Props) {
           src={hasError ? imageDefault : imageUrl}
           alt={title}
           className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${
-            isLoading ? "opacity-0" : "opacity-100"
+            isLoading ? 'opacity-0' : 'opacity-100'
           }`}
           onLoad={() => setIsLoading(false)}
           onError={() => {
@@ -62,7 +70,7 @@ export default function CardMulti({ item }: Props) {
           {/* Ícone do tipo */}
           <span
             className={`rounded-full p-2 shadow-md text-white ${
-              isMovie ? "bg-blue-600" : isTv ? "bg-purple-600" : "bg-green-600"
+              isMovie ? 'bg-blue-600' : isTv ? 'bg-purple-600' : 'bg-green-600'
             }`}
           >
             {isMovie ? (
@@ -79,7 +87,7 @@ export default function CardMulti({ item }: Props) {
         <div className="absolute inset-0 flex justify-center items-center opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/30">
           <CardActionButton
             text="Ver Detalhes"
-            color={isMovie ? "blue" : isTv ? "purple" : "green"}
+            color={isMovie ? 'blue' : isTv ? 'purple' : 'green'}
             onClick={() => console.log(`Ver detalhes de ${title}`)}
           />
         </div>

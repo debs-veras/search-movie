@@ -1,4 +1,4 @@
-import { FaExclamationTriangle, FaRedo } from "react-icons/fa";
+import { FaExclamationTriangle, FaRedo } from 'react-icons/fa';
 
 interface ErrorSectionProps {
   error: string;
@@ -10,8 +10,8 @@ interface ErrorSectionProps {
 export default function ErrorSection({
   error,
   onRetry,
-  className = "",
-  retryButtonText = "Tentar Novamente",
+  className = '',
+  retryButtonText = 'Tentar Novamente',
 }: ErrorSectionProps) {
   return (
     <section className="relative w-full max-h-[600px] bg-gradient-to-br from-gray-900 to-black overflow-hidden py-16 px-4">

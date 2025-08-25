@@ -1,25 +1,27 @@
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { BiUserCircle } from "react-icons/bi";
-import { FiLogOut } from "react-icons/fi";
-import { removeSession } from "../../services/authRequest";
-import { useNavigate } from "react-router-dom";
-import useToastLoading from "../../hooks/useToastLoading";
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { BiUserCircle } from 'react-icons/bi';
+import { FiLogOut } from 'react-icons/fi';
+import { removeSession } from '../../services/authRequest';
+import { useNavigate } from 'react-router-dom';
+import useToastLoading from '../../hooks/useToastLoading';
 
 export default function MenuUser() {
   const navigate = useNavigate();
   const toastLoading = useToastLoading();
+  const user = localStorage.getItem('@user') || '';
 
   const handleLogout = async () => {
-    const sessionId = localStorage.getItem("@session_id") || "";
+    const sessionId = localStorage.getItem('@session_id') || '';
     const response = await removeSession(sessionId);
 
     if (response.success) {
-      localStorage.removeItem("@session_id");
-      navigate("/login");
+      localStorage.removeItem('@session_id');
+      localStorage.removeItem('@user');
+      navigate('/login');
     } else {
       toastLoading({
-        mensagem: response.status_message || "Erro ao sair",
-        tipo: "error",
+        mensagem: response.data || 'Erro ao sair',
+        tipo: 'error',
       });
     }
   };
@@ -41,7 +43,7 @@ export default function MenuUser() {
           align="end"
         >
           <DropdownMenu.Label className="px-4 py-2 border-b border-gray-700 text-sm text-gray-300 select-none">
-            Bem-vindo
+            Bem-vindo(a), {user}
           </DropdownMenu.Label>
 
           <DropdownMenu.Item

@@ -8,7 +8,9 @@ type Props = {
 
 export default function Loading({ className, fill, texto }: Props) {
   return (
-    <div className={`relative flex flex-1 ${className || ''} p-4 transition duration-200`}>
+    <div
+      className={`relative flex flex-1 ${className || ''} p-4 transition duration-200`}
+    >
       <div className="flex flex-1 flex-col items-center justify-center">
         <FaFilm
           className="animate-pulse text-red-600"

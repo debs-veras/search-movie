@@ -1,4 +1,4 @@
-import { GiFilmProjector } from "react-icons/gi";
+import { GiFilmProjector } from 'react-icons/gi';
 export default function Logo() {
   return (
     <div

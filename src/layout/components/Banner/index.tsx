@@ -1,5 +1,5 @@
-import { FaClapperboard } from "react-icons/fa6";
-import { FiFilm } from "react-icons/fi";
+import { FaClapperboard } from 'react-icons/fa6';
+import { FiFilm } from 'react-icons/fi';
 
 export default function Banner() {
   return (

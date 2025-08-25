@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { BiUserCircle } from "react-icons/bi";
-import { PersonResult } from "../../types/listResultsData.d";
-import { API_URL_IMG_TMDB } from "../../constants/api";
-import CardActionButton from "../CardActionButton";
-import CardImageLoader from "../CardImageLoader";
+import { useState } from 'react';
+import { BiUserCircle } from 'react-icons/bi';
+import { PersonResult } from '../../types/listResultsData.d';
+import { API_URL_IMG_TMDB } from '../../constants/api';
+import CardActionButton from '../CardActionButton';
+import CardImageLoader from '../CardImageLoader';
 
 type Props = {
   person: PersonResult;
@@ -23,10 +23,10 @@ export default function CardPerson({ person }: Props) {
 
         {/* Imagem */}
         <img
-          src={hasError ? "avatar.png" : imageUrl}
+          src={hasError ? 'avatar.png' : imageUrl}
           alt={`Foto de perfil de ${person.name}`}
           className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${
-            isLoading ? "opacity-0" : "opacity-100"
+            isLoading ? 'opacity-0' : 'opacity-100'
           }`}
           onLoad={() => setIsLoading(false)}
           onError={() => {
@@ -59,7 +59,7 @@ export default function CardPerson({ person }: Props) {
           <CardActionButton
             text="Ver Detalhes"
             color="green"
-            onClick={() => console.log("Assistir clicado")}
+            onClick={() => console.log('Assistir clicado')}
           />
         </div>
       </div>
