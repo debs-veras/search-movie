@@ -1,9 +1,10 @@
 import Loading from '../components/Loading';
+import SearchMovie from '../layout/components/SearchMovie';
 import PageLayout from '../layout/PageLayout';
+import DetailsPage from '../pages/DetailsPage';
 import HomePage from '../pages/HomePage';
 import NotFoundPage from '../pages/NotFoundPage';
-import SeriesPage from '../pages/SeriesPage';
-import ProtectedRoute from './privateRoute';
+import { ProtectedRoute } from './ProtectedRoute';
 
 const routesPaginas = {
   path: '/',
@@ -20,8 +21,13 @@ const routesPaginas = {
       errorElement: <Loading />,
     },
     {
-      path: '/series',
-      element: <SeriesPage />,
+      path: '/search',
+      element: <SearchMovie />,
+      errorElement: <Loading />,
+    },
+    {
+      path: '/details/:media_type/:id',
+      element: <DetailsPage />,
       errorElement: <Loading />,
     },
   ],

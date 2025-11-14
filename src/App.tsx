@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Loading from './components/Loading';
 import { SearchProvider } from './context/FiltroContext';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
@@ -20,9 +21,11 @@ function App() {
         style={{ width: 'fit-content' }}
       />
       <div className="bg-gray-100 h-screen">
-        <SearchProvider>
-          <Router />
-        </SearchProvider>
+        <AuthProvider>
+          <SearchProvider>
+            <Router />
+          </SearchProvider>
+        </AuthProvider>
       </div>
     </Suspense>
   );

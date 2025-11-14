@@ -16,19 +16,15 @@ import {
   FaLock,
   FaUser,
   FaFilm,
-  FaStar,
-  FaTheaterMasks,
   FaPhotoVideo,
   FaVideo,
 } from 'react-icons/fa';
 import {
   MdLocalMovies,
-  MdMovieFilter,
   MdMovie,
   MdOutlineSlowMotionVideo,
 } from 'react-icons/md';
 import {
-  BsStars,
   BsCameraReels,
   BsFilm,
   BsTicketPerforated,
@@ -37,11 +33,7 @@ import {
 import { BiMoviePlay, BiCameraMovie } from 'react-icons/bi';
 import { IoMdFilm } from 'react-icons/io';
 import useToastLoading from '../../hooks/useToastLoading';
-import {
-  userAuthRequestToken,
-  userCreateSession,
-  userValidateLoginSession,
-} from '../../services/authRequest';
+import { useAuth } from '../../context/AuthContext';
 import Logo from '../../components/Logo';
 
 const loginSchema = z.object({
@@ -58,14 +50,6 @@ const movieQuotes = [
   "I'll be back. - The Terminator",
 ];
 
-const genres = [
-  { name: 'Ação', icon: <FaStar className="text-red-500" /> },
-  { name: 'Drama', icon: <MdMovieFilter className="text-blue-400" /> },
-  { name: 'Comédia', icon: <FaTheaterMasks className="text-yellow-400" /> },
-  { name: 'Ficção', icon: <BsStars className="text-purple-400" /> },
-  { name: 'Terror', icon: <GiClapperboard className="text-green-400" /> },
-];
-
 export default function Login() {
   const {
     register,
@@ -77,50 +61,25 @@ export default function Login() {
   const navigate = useNavigate();
   const [currentQuote, setCurrentQuote] = useState('');
   const toastLoading = useToastLoading();
+  const { login } = useAuth();
 
-  useEffect(() => {
-    const quoteInterval = setInterval(() => {
-      setCurrentQuote(
-        movieQuotes[Math.floor(Math.random() * movieQuotes.length)]
-      );
-    }, 5000);
-
-    return () => {
-      clearInterval(quoteInterval);
-    };
-  }, []);
-
-  const handleLogin = handleSubmit(async (dados) => {
+  const handleLogin = handleSubmit(async (data) => {
     setLoading(true);
     toastLoading({ mensagem: 'Verificando usuário' });
-    let response: any;
-    response = await userAuthRequestToken();
-    if (response.data.success) {
-      response = await userValidateLoginSession({
-        username: dados.username,
-        password: dados.password,
-        request_token: response.data.request_token,
-      });
-      console.log(response);
-      if (response.success) {
-        response = await userCreateSession(response.data.request_token);
-        if (response.success) {
-          localStorage.setItem('@session_id', response.data.session_id);
-          localStorage.setItem('@user', dados.username);
-          toastLoading({
-            mensagem: 'Login realizado com sucesso',
-            tipo: 'success',
-            onClose: () => navigate('/'),
-          });
-        }
-      }
-    }
+    const result = await login(data.username, data.password);
 
-    if (!response.success)
+    if (result.success) {
       toastLoading({
-        mensagem: response.data,
-        tipo: response.tipo,
+        mensagem: 'Login realizado com sucesso',
+        tipo: 'success',
+        onClose: () => navigate('/'),
       });
+    } else {
+      toastLoading({
+        mensagem: result.message || 'Erro no login',
+        tipo: 'error',
+      });
+    }
 
     setLoading(false);
   });
@@ -143,6 +102,18 @@ export default function Login() {
     BiCameraMovie,
     IoMdFilm,
   ];
+
+  useEffect(() => {
+    const quoteInterval = setInterval(() => {
+      setCurrentQuote(
+        movieQuotes[Math.floor(Math.random() * movieQuotes.length)]
+      );
+    }, 5000);
+
+    return () => {
+      clearInterval(quoteInterval);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-950 relative flex items-center justify-center px-4 overflow-hidden">
@@ -248,7 +219,7 @@ export default function Login() {
             className="w-full bg-gradient-to-r from-red-600 to-blue-700 hover:from-red-500 hover:to-blue-600 text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-red-500/20 disabled:opacity-50 disabled:cursor-not-allowed group flex items-center justify-center relative overflow-hidden"
           >
             <span className="relative z-10">
-              {loading ? 'Acessando o catálogo...' : 'Acessar o Cinema'}
+              {loading ? 'Acessando o catálogo...' : 'Acessar'}
             </span>
             <div className="absolute inset-0 bg-gradient-to-r from-red-500/0 via-white/10 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           </button>
@@ -256,27 +227,11 @@ export default function Login() {
 
         {/* Rodapé */}
         <div className="mt-8 text-center">
-          <div className="flex justify-center space-x-5 mb-4">
-            {genres.map((genre, index) => (
-              <div key={index} className="flex flex-col items-center group">
-                <div className="p-2 bg-gray-800/50 rounded-lg group-hover:bg-gray-700/50 transition-colors duration-300 group-hover:scale-110">
-                  {genre.icon}
-                </div>
-                <span className="text-xs text-gray-500 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  {genre.name}
-                </span>
-              </div>
-            ))}
-          </div>
           <p className="text-xs text-gray-500 flex items-center justify-center">
-            <IoMdFilm className="mr-2 text-gray-400" />
             Sua jornada cinematográfica começa aqui
           </p>
         </div>
       </div>
-
-      {/* Efeito de poeira estelar */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxyYWRpYWxHcmFkaWVudCBpZD0iYSIgY3g9IjUwJSIgY3k9IjUwJSIgcj0iNTAlIiBmeD0iNTAlIiBmeT0iNTAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmZmIiBzdG9wLW9wYWNpdHk9Ii4wNSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+PC9yYWRpYWxHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNhKSIgb3BhY2l0eT0iLjIiLz48L3N2Zz4=')] opacity-10 pointer-events-none"></div>
     </div>
   );
 }

@@ -1,22 +1,40 @@
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { BiUserCircle } from 'react-icons/bi';
 import { FiLogOut } from 'react-icons/fi';
-import { removeSession } from '../../services/authRequest';
+import { getAccountDetails, removeSession } from '../../services/authRequest';
 import { useNavigate } from 'react-router-dom';
 import useToastLoading from '../../hooks/useToastLoading';
+import { useEffect, useState } from 'react';
+import storage from '../../utils/storage';
+import { API_URL_IMG_TMDB } from '../../constants/api';
+
+interface Account {
+  username: string;
+  name: string;
+  avatar_path?: string;
+}
 
 export default function MenuUser() {
   const navigate = useNavigate();
   const toastLoading = useToastLoading();
-  const user = localStorage.getItem('@user') || '';
+  const session_id = storage.getSession();
+
+  const [account, setAccount] = useState<Account>({
+    username: '',
+    name: '',
+    avatar_path: '',
+  });
 
   const handleLogout = async () => {
-    const sessionId = localStorage.getItem('@session_id') || '';
+    const sessionId = storage.getSession() || '';
     const response = await removeSession(sessionId);
 
     if (response.success) {
-      localStorage.removeItem('@session_id');
-      localStorage.removeItem('@user');
+      storage.clearSession();
+      try {
+        localStorage.removeItem('@user');
+      } catch {
+        /* noop */
+      }
       navigate('/login');
     } else {
       toastLoading({
@@ -25,38 +43,61 @@ export default function MenuUser() {
       });
     }
   };
+
+  useEffect(() => {
+    const fetchAccount = async () => {
+      const response = await getAccountDetails(session_id || '');
+      if (response.success && response.data) {
+        const data = response.data;
+        setAccount({
+          username: data.username,
+          name: data.name,
+          avatar_path: data.avatar?.tmdb?.avatar_path,
+        });
+      }
+    };
+
+    fetchAccount();
+  }, [session_id]);
+
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild>
-        <button
-          className="text-gray-300 hover:text-white transition-colors outline-none cursor-pointer"
-          aria-label="Menu do usuário"
-        >
-          <BiUserCircle size={22} className="md:w-6 md:h-6" />
-        </button>
-      </DropdownMenu.Trigger>
-
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content
-          className="min-w-[180px] bg-gray-800 rounded-md shadow-lg border border-gray-700 overflow-hidden z-50 will-change-[opacity,transform]"
-          sideOffset={8}
-          align="end"
-        >
-          <DropdownMenu.Label className="px-4 py-2 border-b border-gray-700 text-sm text-gray-300 select-none">
-            Bem-vindo(a), {user}
-          </DropdownMenu.Label>
-
-          <DropdownMenu.Item
-            className="px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 flex items-center cursor-pointer outline-none"
-            onClick={handleLogout}
+    <>
+      <div className="flex gap-2 w-full justify-between">
+        <div className="flex gap-2">
+          <button
+            className="flex items-center justify-center text-gray-300 hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-full cursor-pointer hover:scale-105"
+            aria-label="Menu do usuário"
           >
-            <FiLogOut className="mr-2" />
-            Sair
-          </DropdownMenu.Item>
-
-          <DropdownMenu.Arrow className="fill-gray-800" />
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
+            {account.avatar_path ? (
+              <img
+                src={`${API_URL_IMG_TMDB}/w64_and_h64_face${account.avatar_path}`}
+                alt="avatar"
+                className="w-8 h-8 rounded-full object-cover border-2 border-gray-600 hover:border-red-500 transition-colors"
+              />
+            ) : (
+              <BiUserCircle
+                size={32}
+                className="hover:text-red-400 transition-colors"
+              />
+            )}
+          </button>
+          <div className="flex flex-col">
+            <span className="text-xs text-gray-400 truncate">
+              Bem-vindo(a),
+            </span>
+            <span className="text-sm text-gray-100 font-semibold truncate">
+              {account.username || 'Usuário'}
+            </span>
+          </div>
+        </div>
+        <button
+          className="px-3 py-2 text-sm text-red-300 hover:bg-red-900/30 hover:text-red-100 flex items-center gap-3 cursor-pointer transition-all duration-150 rounded-md focus:outline-none focus:bg-red-900/30"
+          onClick={handleLogout}
+        >
+          <FiLogOut size={16} className="text-red-400" />
+          Sair
+        </button>
+      </div>
+    </>
   );
 }

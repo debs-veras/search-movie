@@ -17,22 +17,26 @@ export default function Header() {
   const handleClearFilters = () => {
     setFiltros({ query: '', type: '' });
     setSearchActive(false);
+    navigate('/');
   };
 
-  const handleOnClickFilters = (type: string) => {
-    setFiltros({ query: '', type: type });
-    setSearchActive(false);
-    setMobileMenuOpen(false);
-  };
+  // redireciona automaticamente para /search ou /
+  useEffect(() => {
+    if (filtros.query?.trim() !== '') {
+      navigate('/search');
+    } else {
+      navigate('/');
+    }
+  }, [filtros.query, navigate]);
 
+  // mantém o campo de busca ativo enquanto há query
   useEffect(() => {
     if (filtros.query) setSearchActive(true);
+    else setSearchActive(false);
   }, [filtros.query]);
 
   useEffect(() => {
-    if (searchActive) {
-      setMobileMenuOpen(false);
-    }
+    if (searchActive) setMobileMenuOpen(false);
   }, [searchActive]);
 
   // Animations
@@ -56,11 +60,6 @@ export default function Header() {
     },
   };
 
-  const itemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: { opacity: 1, x: 0 },
-  };
-
   const searchVariants = {
     hidden: { opacity: 0, height: 0 },
     visible: { opacity: 1, height: 'auto' },
@@ -74,36 +73,6 @@ export default function Header() {
           {/* Logo + Navigation */}
           <div className="flex items-center space-x-8">
             <Logo />
-
-            <nav className="hidden lg:flex space-x-6">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="text-gray-300 hover:text-white transition-colors"
-                onClick={() => handleOnClickFilters('movie')}
-              >
-                Filmes
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="text-gray-300 hover:text-white transition-colors cursor-pointer"
-                onClick={() => {
-                  handleOnClickFilters('tv');
-                  navigate('/series');
-                }}
-              >
-                Séries
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="text-gray-300 hover:text-white transition-colors"
-                onClick={() => handleOnClickFilters('person')}
-              >
-                Artistas
-              </motion.button>
-            </nav>
           </div>
 
           {/* Search + User */}
@@ -128,7 +97,7 @@ export default function Header() {
                 placeholder={searchActive ? 'Continue buscando...' : 'Buscar'}
                 onFocus={() => setSearchActive(true)}
               />
-              {searchActive && (
+              {searchActive && filtros.query && (
                 <motion.button
                   onClick={handleClearFilters}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
@@ -182,7 +151,6 @@ export default function Header() {
             >
               <BiSearch size={20} />
             </motion.button>
-            <MenuUser />
           </div>
         </div>
 
@@ -197,41 +165,7 @@ export default function Header() {
               variants={menuVariants}
             >
               <motion.nav className="flex flex-col space-y-3 mt-4 bg-gray-900/90 rounded-lg p-4 backdrop-blur-sm">
-                <motion.button
-                  variants={itemVariants}
-                  className="text-gray-300 hover:text-white transition-colors py-3 px-4 text-left rounded-md hover:bg-gray-800 flex items-center"
-                  onClick={() => handleOnClickFilters('movie')}
-                  whileHover={{ x: 5 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <span className="flex-1">Filmes</span>
-                  <span className="text-red-500 text-xs">→</span>
-                </motion.button>
-
-                <motion.button
-                  variants={itemVariants}
-                  className="text-gray-300 hover:text-white transition-colors py-3 px-4 text-left rounded-md hover:bg-gray-800 flex items-center"
-                  onClick={() => {
-                    handleOnClickFilters('tv');
-                    navigate('/series');
-                  }}
-                  whileHover={{ x: 5 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <span className="flex-1">Séries</span>
-                  <span className="text-red-500 text-xs">→</span>
-                </motion.button>
-
-                <motion.button
-                  variants={itemVariants}
-                  className="text-gray-300 hover:text-white transition-colors py-3 px-4 text-left rounded-md hover:bg-gray-800 flex items-center"
-                  onClick={() => handleOnClickFilters('person')}
-                  whileHover={{ x: 5 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <span className="flex-1">Artistas</span>
-                  <span className="text-red-500 text-xs">→</span>
-                </motion.button>
+                <MenuUser />
               </motion.nav>
             </motion.div>
           )}
@@ -262,13 +196,15 @@ export default function Header() {
                   placeholder="Buscar filmes, séries..."
                   autoFocus
                 />
-                <motion.button
-                  onClick={handleClearFilters}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
-                  whileHover={{ scale: 1.2 }}
-                >
-                  ×
-                </motion.button>
+                {filtros.query && (
+                  <motion.button
+                    onClick={handleClearFilters}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                    whileHover={{ scale: 1.2 }}
+                  >
+                    ×
+                  </motion.button>
+                )}
               </div>
             </motion.div>
           )}

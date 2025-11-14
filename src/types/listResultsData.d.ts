@@ -14,7 +14,7 @@ export type MultiResult = {
 export type PersonResult = {
   id: number;
   name: string;
-  profile_path: string | null;
+  profile_path?: string;
   known_for_department: string;
   media_type: 'person';
 };
@@ -31,7 +31,7 @@ export type SerieResult = {
   origin_country: string[];
   genre_ids: number[];
   popularity: number;
-  media_type?: 'tv';
+  media_type: 'tv';
 };
 
 export type MovieResult = {
@@ -46,5 +46,5 @@ export type MovieResult = {
   vote_count: number;
   genre_ids: number[];
   popularity: number;
-  media_type?: 'movie';
+  media_type: 'movie';
 };

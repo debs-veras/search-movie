@@ -3,8 +3,10 @@ import instance from '../configAxios';
 function handleError(error: any) {
   return {
     success: false,
-    tipo: 'error',
-    data: error.response.data.status_message || 'Erro ao realizar operação',
+    data:
+      error?.response?.data?.status_message ||
+      error?.message ||
+      'Erro ao realizar operação',
   };
 }
 
@@ -35,12 +37,20 @@ export const postRequest = async (url: string, obj: any) => {
   }
 };
 
-export const getRequest = async (url: string) => {
+export const getRequest = async (url: string, signal?: AbortSignal) => {
   const axios = instance();
   try {
-    const response = await axios.get(url);
+    const response = await axios.get(url, { signal });
     return { data: response.data, success: true };
   } catch (error: any) {
+    // Se for cancelamento, relança para que o caller possa tratá-lo (AbortController)
+    if (
+      error?.code === 'ERR_CANCELED' ||
+      error?.name === 'CanceledError' ||
+      error?.name === 'AbortError'
+    ) {
+      throw error;
+    }
     return handleError(error);
   }
 };

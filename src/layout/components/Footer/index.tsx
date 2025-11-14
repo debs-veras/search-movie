@@ -10,33 +10,6 @@ export default function Footer() {
             <span className="text-xl font-bold">MovieExplore</span>
           </div>
 
-          <div className="flex gap-6 flex-wrap ">
-            <a
-              href="#"
-              className="text-gray-400 hover:text-red-600 transition-colors"
-            >
-              Filmes
-            </a>
-            <a
-              href="#"
-              className="text-gray-400 hover:text-blue-600 transition-colors"
-            >
-              Séries
-            </a>
-            <a
-              href="#"
-              className="text-gray-400 hover:text-purple-600 transition-colors"
-            >
-              Animes
-            </a>
-            <a
-              href="#"
-              className="text-gray-400 hover:text-gray-300 transition-colors"
-            >
-              Sobre
-            </a>
-          </div>
-
           <div className="text-sm text-gray-500">
             © {new Date().getFullYear()} Movie Explore - Todos os direitos
             reservados

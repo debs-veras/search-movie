@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FaFire, FaStar } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaFire, FaStar } from 'react-icons/fa';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import 'swiper/css';
@@ -7,6 +7,7 @@ import 'swiper/css/navigation';
 import { getTrendingHero } from '../../../services/movieRequest';
 import ErrorSection from '../../../components/ErrorSection';
 import SkeletonTrendingHero from './SkeletonTrendingHero';
+import { API_URL_IMG_TMDB } from '../../../constants/api';
 
 type TrendingHero = {
   id: number;
@@ -36,22 +37,22 @@ export default function TrendingHero() {
     searchTrendingHero();
   }, []);
 
-  if (isLoading) {
-    return <SkeletonTrendingHero />;
-  }
+  if (isLoading) return <SkeletonTrendingHero />;
 
-  if (error) {
-    return <ErrorSection error={error} onRetry={searchTrendingHero} />;
-  }
+  if (error) return <ErrorSection error={error} onRetry={searchTrendingHero} />;
 
   return (
     <section className="relative w-full max-h-[600px] bg-gradient-to-br from-gray-900 to-black overflow-hidden">
       {trendingMovies[0]?.backdrop_path && (
         <div className="absolute inset-0 z-0">
           <img
-            src={`https://image.tmdb.org/t/p/original${trendingMovies[0].backdrop_path}`}
+            src={`${API_URL_IMG_TMDB}w780${trendingMovies[0].backdrop_path}`}
+            srcSet={`${API_URL_IMG_TMDB}w780${trendingMovies[0].backdrop_path} 780w, ${API_URL_IMG_TMDB}original${trendingMovies[0].backdrop_path} 2000w`}
+            sizes="100vw"
             alt={trendingMovies[0].title}
             className="w-full h-full object-cover opacity-20"
+            decoding="async"
+            loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent" />
         </div>
@@ -65,7 +66,10 @@ export default function TrendingHero() {
         </div>
         <Swiper
           modules={[Navigation]}
-          navigation
+          navigation={{
+            nextEl: '.collection-swiper-button-next',
+            prevEl: '.collection-swiper-button-prev',
+          }}
           spaceBetween={16}
           slidesPerView={'auto'}
           className="w-full"
@@ -78,18 +82,19 @@ export default function TrendingHero() {
           }}
         >
           {trendingMovies.map((movie, index) => (
-            <SwiperSlide
-              key={movie.id}
-              className="rounded-xl overflow-hidden w-[180px] sm:w-[200px] md:w-[220px]"
-            >
+            <SwiperSlide key={movie.id} className="rounded-xl overflow-hidden">
               <div className="relative group transition-transform duration-300 shadow-lg hover:scale-103">
                 <div className="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full font-bold z-10">
                   #{index + 1}
                 </div>
                 <img
-                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  src={`${API_URL_IMG_TMDB}w500${movie.poster_path}`}
+                  srcSet={`${API_URL_IMG_TMDB}w300${movie.poster_path} 300w, ${API_URL_IMG_TMDB}w500${movie.poster_path} 500w, ${API_URL_IMG_TMDB}w780${movie.poster_path} 780w`}
+                  sizes="(min-width:1280px) 20vw, (min-width:768px) 25vw, 50vw"
                   alt={movie.title}
-                  className="w-full h-auto xs:h-[300px] sm:h-[350px] object-cover object-center rounded-xl"
+                  className="w-full h-auto xxs:h-[300px] sm:h-[350px] object-cover object-center"
+                  decoding="async"
+                  loading="lazy"
                 />
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-end z-20">
@@ -114,6 +119,12 @@ export default function TrendingHero() {
               </div>
             </SwiperSlide>
           ))}
+          <button className="collection-swiper-button-next absolute top-1/2 right-2 z-10 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-gray-900/80 hover:bg-red-600 rounded-full transition-all duration-300 cursor-pointer">
+            <FaChevronRight className="text-white" />
+          </button>
+          <button className="collection-swiper-button-prev absolute top-1/2 left-2 z-10 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-gray-900/80 hover:bg-red-600 rounded-full transition-all duration-300 cursor-pointer">
+            <FaChevronLeft className="text-white" />
+          </button>
         </Swiper>
       </div>
     </section>

@@ -1,4 +1,3 @@
-//Icons
 import { TbVaccine } from 'react-icons/tb';
 import { FiZap } from 'react-icons/fi';
 import { FaClapperboard } from 'react-icons/fa6';

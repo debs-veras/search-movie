@@ -1,9 +1,8 @@
 import { ResquestToken } from '../types/auth.d';
 import { deleteRequest, getRequest, postRequest } from '../utils/axiosRequest';
-const API_KEY = import.meta.env.VITE_API_KEY;
 
 export const userAuthRequestToken = async () => {
-  return await getRequest(`3/authentication/token/new?api_key=${API_KEY}`);
+  return await getRequest(`3/authentication/token/new`);
 };
 
 export const userValidateLoginSession = async (data: ResquestToken) => {
@@ -20,4 +19,8 @@ export const removeSession = async (sessionId: string) => {
   return await deleteRequest(`3/authentication/session`, {
     session_id: sessionId,
   });
+};
+
+export const getAccountDetails = async (session_id: string) => {
+  return await getRequest(`3/account?session_id=${session_id}`);
 };

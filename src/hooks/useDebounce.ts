@@ -1,32 +1,41 @@
-import { useRef } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 
-interface DebounceFunction<T extends (...args: unknown[]) => void> {
-  (...args: Parameters<T>): void;
-}
+type DebounceFunction<T extends (...args: unknown[]) => void> = (
+  ...args: Parameters<T>
+) => void;
 
-interface UseDebounce {
-  <T extends (...args: unknown[]) => void>(
-    fn: T,
-    delay: number
-  ): DebounceFunction<T>;
-}
-
-const useDebounce: UseDebounce = function <
-  T extends (...args: unknown[]) => void,
->(fn: T, delay: number): DebounceFunction<T> {
+function useDebounce<T extends (...args: unknown[]) => void>(
+  fn: T,
+  delay: number
+): [DebounceFunction<T>, () => void] {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fnRef = useRef(fn);
 
-  function debounceFn(...args: Parameters<T>): void {
+  useEffect(() => {
+    fnRef.current = fn;
+  }, [fn]);
+
+  const debounced = useCallback(
+    (...args: Parameters<T>) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        fnRef.current(...args);
+      }, delay);
+    },
+    [delay]
+  );
+
+  const cancel = useCallback(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
+  }, []);
 
-    timeoutRef.current = setTimeout(() => {
-      fn(...args);
-    }, delay);
-  }
-
-  return debounceFn;
-};
+  return [debounced, cancel];
+}
 
 export default useDebounce;

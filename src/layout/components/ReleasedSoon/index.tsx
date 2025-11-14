@@ -3,6 +3,7 @@ import { FaStar } from 'react-icons/fa';
 import { getReleasedSoon } from '../../../services/movieRequest';
 import ErrorSection from '../../../components/ErrorSection';
 import SkeletonReleasedSoon from './SkeletonReleasedSoon';
+import { API_URL_IMG_TMDB } from '../../../constants/api';
 
 interface ReleasedSoon {
   id: number;
@@ -58,7 +59,7 @@ export default function ReleasedSoon() {
             >
               <div className="relative">
                 <img
-                  src={`https://image.tmdb.org/t/p/w500${filme.poster_path}`}
+                  src={`${API_URL_IMG_TMDB}w500${filme.poster_path}`}
                   alt={filme.title}
                   className="w-full max-h-90 object-cover transition-transform group-hover:scale-110 group-hover:brightness-110 duration-300"
                 />
