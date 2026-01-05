@@ -10,9 +10,13 @@ import {
 } from 'react-icons/fa';
 import { BiTime, BiWorld } from 'react-icons/bi';
 import { getDetails } from '../../services/searchRequest';
+import { getAccountStates, markAsFavorite } from '../../services/movieRequest';
 import { API_URL_IMG_TMDB } from '../../constants/api';
 import ErrorSection from '../../components/ErrorSection';
 import { getImageUrl } from '../../utils/getImageFallback';
+import storage from '../../utils/storage';
+import useToastLoading from '../../hooks/useToastLoading';
+import { useAuth } from '../../context/AuthContext';
 
 interface DetailsData {
   id: number;
@@ -70,8 +74,14 @@ export default function DetailsPage() {
   const [error, setError] = useState<string | null>(null);
   const [showTrailer, setShowTrailer] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'cast'>('overview');
+  const [showWorks, setShowWorks] = useState(false);
 
-  // Função para buscar dados
+  // Favoritos
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [favProcessing, setFavProcessing] = useState(false);
+  const toastLoading = useToastLoading();
+  const { user } = useAuth();
+
   const fetchData = async () => {
     if (!id || !media_type) {
       setError('ID ou tipo de mídia não encontrado');
@@ -86,6 +96,23 @@ export default function DetailsPage() {
         (v: any) => v.type === 'Trailer' && v.site === 'YouTube'
       );
       if (trailerVideo) setTrailer(trailerVideo.key);
+
+      // Verificar se já está favoritado (apenas para filmes/séries)
+      const session = storage.getSession();
+      if (session && media_type !== 'person') {
+        try {
+          const accountStates = await getAccountStates(
+            media_type,
+            Number(id),
+            session
+          );
+          if (accountStates?.success && accountStates.data) {
+            setIsFavorited(!!accountStates.data.favorite);
+          }
+        } catch (err) {
+          console.error('Erro ao obter estado da conta', err);
+        }
+      }
     } else setError(response.data);
     setLoading(false);
   };
@@ -96,8 +123,11 @@ export default function DetailsPage() {
     ? `${API_URL_IMG_TMDB}/w500${imagePath}`
     : getImageUrl(media_type);
 
-  const backdropImage = details?.backdrop_path
-    ? `${API_URL_IMG_TMDB}/w1280${details.backdrop_path}`
+  const backdropImageSrc = details?.backdrop_path
+    ? `${API_URL_IMG_TMDB}/original${details.backdrop_path}`
+    : null;
+  const backdropImageSrcSet = details?.backdrop_path
+    ? `${API_URL_IMG_TMDB}/w780${details.backdrop_path} 780w, ${API_URL_IMG_TMDB}/w1280${details.backdrop_path} 1280w, ${API_URL_IMG_TMDB}/w1920${details.backdrop_path} 1920w, ${API_URL_IMG_TMDB}/original${details.backdrop_path} 3840w`
     : null;
 
   const title = details?.title || details?.name || 'Título não disponível';
@@ -124,9 +154,78 @@ export default function DetailsPage() {
       ?.name;
   };
 
-  const handleAddToList = () => {
-    console.log('Adicionar à lista de favoritos (a implementar)');
+  const handleAddToList = async () => {
+    const session = storage.getSession();
+    if (!session) {
+      navigate('/login');
+      return;
+    }
+
+    if (!user) {
+      toastLoading({ mensagem: 'Usuário não encontrado', tipo: 'error' });
+      return;
+    }
+
+    setFavProcessing(true);
+
+    const accountId = user.id;
+    const resp = await markAsFavorite(
+      accountId,
+      session,
+      media_type as 'movie' | 'tv',
+      Number(id),
+      !isFavorited
+    );
+
+    if (resp?.success) {
+      setIsFavorited(!isFavorited);
+      toastLoading({
+        mensagem: !isFavorited
+          ? 'Adicionado aos favoritos'
+          : 'Removido dos favoritos',
+        tipo: 'success',
+      });
+    } else {
+      toastLoading({
+        mensagem: resp.data || 'Erro ao atualizar favoritos',
+        tipo: 'error',
+      });
+    }
+    setFavProcessing(false);
   };
+
+  const personCreditsCast =
+    (details as any)?.combined_credits?.cast ??
+    (details as any)?.credits?.cast ??
+    [];
+
+  const personCreditsCrew =
+    (details as any)?.combined_credits?.crew ??
+    (details as any)?.credits?.crew ??
+    [];
+
+  const combinedWorks = [...personCreditsCast, ...personCreditsCrew]
+    .filter(Boolean)
+    .sort((a: any, b: any) => {
+      const dateA = a.release_date || a.first_air_date || '';
+      const dateB = b.release_date || b.first_air_date || '';
+      if (dateA && dateB) return dateB.localeCompare(dateA);
+      if (b.popularity || 0) return (b.popularity || 0) - (a.popularity || 0);
+      return 0;
+    });
+
+  const seenWorks = new Set<string>();
+  const uniqueWorks = [] as any[];
+  for (const w of combinedWorks) {
+    const media = w.media_type || (w.title ? 'movie' : 'tv');
+    const key = `${w.id}-${media}`;
+    if (!seenWorks.has(key)) {
+      seenWorks.add(key);
+      uniqueWorks.push({ ...w, media_type: media });
+    }
+  }
+
+  const displayedWorks = uniqueWorks.slice(0, 24);
 
   useEffect(() => {
     fetchData();
@@ -153,15 +252,18 @@ export default function DetailsPage() {
       {/* Hero Section */}
       <div className="relative pt-20">
         {/* Background */}
-        {backdropImage && (
+        {backdropImageSrc && (
           <div className="absolute inset-0 z-0">
             <img
-              src={backdropImage}
+              src={backdropImageSrc ?? getImageUrl(media_type)}
+              srcSet={backdropImageSrcSet ?? undefined}
+              sizes="100vw"
               alt={title}
+              loading="eager"
+              decoding="async"
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-gray-900/40" />
-            <div className="absolute inset-0 backdrop-blur-[1px]" />
           </div>
         )}
 
@@ -178,7 +280,7 @@ export default function DetailsPage() {
                 {trailer && (
                   <button
                     onClick={() => setShowTrailer(true)}
-                    className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-2xl backdrop-blur-sm"
+                    className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-2xl backdrop-blur-sm cursor-pointer"
                   >
                     <div className="bg-red-600 hover:bg-red-700 text-white p-4 rounded-full transition-all duration-300 transform group-hover:scale-110">
                       <FaPlay size={24} />
@@ -256,25 +358,28 @@ export default function DetailsPage() {
                 {trailer && (
                   <button
                     onClick={() => setShowTrailer(true)}
-                    className="flex items-center gap-3 px-6 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg"
+                    className="flex items-center gap-3 px-6 py-3 bg-red-600 hover:bg-red-700 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg cursor-pointer"
                   >
                     <FaPlay />
                     Assistir Trailer
                   </button>
                 )}
 
-                <button
-                  onClick={handleAddToList}
-                  className="flex items-center gap-3 px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-lg font-semibold transition-all duration-300 border border-gray-600"
-                >
-                  <FaPlus />
-                  Minha Lista
-                </button>
+                {!isPerson && (
+                  <button
+                    onClick={handleAddToList}
+                    disabled={favProcessing}
+                    className={`flex items-center gap-3 px-6 py-3 rounded-lg font-semibold transition-all duration-300 border border-gray-600 ${favProcessing ? 'bg-gray-700/50 cursor-not-allowed' : 'bg-gray-800 hover:bg-gray-700 cursor-pointer'}`}
+                  >
+                    {isFavorited ? <FaStar /> : <FaPlus />}
+                    {isFavorited ? 'Favorito' : 'Adicionar a Minha Lista'}
+                  </button>
+                )}
                 <a
                   href={`https://www.themoviedb.org/${media_type}/${details.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-3 px-6 py-3 bg-yellow-600 hover:bg-yellow-700 rounded-lg font-semibold transition-all duration-300"
+                  className="flex items-center gap-3 px-6 py-3 bg-yellow-600 hover:bg-yellow-700 rounded-lg font-semibold transition-all duration-300 cursor-pointer"
                 >
                   <FaImdb />
                   TMDB
@@ -304,7 +409,7 @@ export default function DetailsPage() {
             <div className="flex gap-8">
               <button
                 onClick={() => setActiveTab('overview')}
-                className={`pb-4 font-semibold transition-all duration-300 ${
+                className={`pb-4 font-semibold transition-all duration-300 cursor-pointer ${
                   activeTab === 'overview'
                     ? 'text-red-500 border-b-2 border-red-500'
                     : 'text-gray-400 hover:text-white'
@@ -314,7 +419,7 @@ export default function DetailsPage() {
               </button>
               <button
                 onClick={() => setActiveTab('cast')}
-                className={`pb-4 font-semibold transition-all duration-300 ${
+                className={`pb-4 font-semibold transition-all duration-300 cursor-pointer ${
                   activeTab === 'cast'
                     ? 'text-red-500 border-b-2 border-red-500'
                     : 'text-gray-400 hover:text-white'
@@ -483,6 +588,64 @@ export default function DetailsPage() {
                 </div>
               )}
             </div>
+
+            {/* Trabalhos / Filmografia (apenas pessoa) */}
+            <div className="mt-6 flex items-center gap-4">
+              <button
+                onClick={() => setShowWorks((s) => !s)}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white font-semibold transition-colors duration-200"
+              >
+                {showWorks ? 'Esconder Trabalhos' : 'Ver Trabalhos'}
+              </button>
+              <span className="text-sm text-gray-400">
+                {uniqueWorks.length} encontrados
+              </span>
+            </div>
+
+            {showWorks && (
+              <div className="mt-6">
+                <h3 className="text-2xl font-bold text-white mb-4">
+                  Trabalhos
+                </h3>
+                {displayedWorks.length === 0 ? (
+                  <p className="text-gray-400">Nenhum trabalho encontrado.</p>
+                ) : (
+                  <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    {displayedWorks.map((work) => (
+                      <div
+                        key={`${work.id}-${work.media_type}`}
+                        className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-3 hover:bg-gray-700/50 transition-all duration-300 group border border-gray-700 cursor-pointer"
+                        onClick={() =>
+                          navigate(`/details/${work.media_type}/${work.id}`)
+                        }
+                      >
+                        <div className="relative mb-3 overflow-hidden rounded-lg">
+                          <img
+                            src={
+                              work.poster_path
+                                ? `${API_URL_IMG_TMDB}/w300${work.poster_path}`
+                                : work.backdrop_path
+                                  ? `${API_URL_IMG_TMDB}/w300${work.backdrop_path}`
+                                  : getImageUrl(work.media_type)
+                            }
+                            alt={work.title || work.name}
+                            className="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-300"
+                          />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-white text-sm mb-1 line-clamp-2 group-hover:text-red-400 transition-colors">
+                            {work.title || work.name}
+                          </p>
+                          <p className="text-gray-400 text-xs line-clamp-2">
+                            {work.character || work.job || work.media_type}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -499,7 +662,7 @@ export default function DetailsPage() {
           >
             <button
               onClick={() => setShowTrailer(false)}
-              className="absolute top-4 right-4 z-10 bg-gray-900/80 hover:bg-red-600 text-white p-2 rounded-full transition-all duration-300"
+              className="absolute top-4 right-4 z-10 bg-gray-900/80 hover:bg-red-600 text-white p-2 rounded-full transition-all duration-300 cursor-pointer"
             >
               <FaTimes size={20} />
             </button>

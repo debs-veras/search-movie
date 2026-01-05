@@ -1,54 +1,115 @@
-# React + TypeScript + Vite
+# MovieExplore
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🔎 **MovieExplore** é um front-end em **React + TypeScript + Vite** para pesquisar filmes e séries usando a API do **TMDB**. O projeto oferece busca, página de detalhes, autenticação e gerenciamento de favoritos (Minha Coleção).
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🧭 Visão geral
 
-## Expanding the ESLint configuration
+- **Framework**: React + TypeScript
+- **Bundler**: Vite
+- **Estilização**: Tailwind CSS
+- **Libs**: React Router, Framer Motion, React Hook Form, React Toastify, Swiper
+- **Gerenciador de pacotes**: pnpm
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## ✅ Funcionalidades principais
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+- Busca por filmes/séries com navegação e cache simples
+- Página de detalhes com trailer, sinopse, elenco, runtime, e imagens responsivas
+- Autenticação via TMDB (request token -> validate -> session)
+- Favoritos (adicionar/remover) e página "Minha Coleção" (filmes e séries)
+- Header responsivo, menu do usuário, e experiência mobile otimizada
+
+## 🔧 Pré-requisitos
+
+- Node.js >= 18
+- pnpm (recomendado)
+
+## 🚀 Rodando localmente
+
+1. Clone o repositório
+
+```bash
+git clone <repo-url>
+cd search-movie
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Instale dependências
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-});
+```bash
+pnpm install
 ```
+
+3. Crie arquivo `.env` na raiz com as variáveis abaixo
+
+```
+VITE_TMDB_KEY=your_tmdb_api_key_here
+VITE_AUTH_TOKEN=your_tmdb_bearer_token_here
+```
+
+- `VITE_TMDB_KEY`: sua API Key do TMDB (https://www.themoviedb.org/settings/api)
+- `VITE_AUTH_TOKEN`: token Bearer (opcional conforme necessidade)
+
+4. Rodar em desenvolvimento
+
+```bash
+pnpm dev
+```
+
+Acesse: http://localhost:5173
+
+## 📦 Scripts úteis
+
+- `pnpm dev` — rodar em modo desenvolvimento
+- `pnpm build` — build de produção (TS + vite build)
+- `pnpm preview` — rodar preview do build local
+- `pnpm lint` — rodar ESLint
+- `pnpm format` — formatar com Prettier
+
+## 🧾 Arquitetura importante
+
+- `src/pages` — páginas (Home, Details, Login, MyCollection)
+- `src/services` — interações com a API (authRequest, movieRequest, searchRequest)
+- `src/components` — componentes reutilizáveis (Header, MenuUser, Logo, etc.)
+- `src/layout` — seções e layout da página (TrendingHero, CollectionsSection)
+
+## 🔌 Integração TMDB (endpoints usados)
+
+- Autenticação:
+  - `GET /3/authentication/token/new` — request token
+  - `POST /3/authentication/token/validate_with_login` — validar credenciais
+  - `POST /3/authentication/session/new` — criar sessão
+  - `DELETE /3/authentication/session` — remover sessão
+  - `GET /3/account` — obter detalhes da conta
+- Favoritos:
+  - `GET /3/{media_type}/{id}/account_states` — estados da conta
+  - `POST /3/account/{account_id}/favorite` — marcar/desmarcar favorito
+  - `GET /3/account/{account_id}/favorite/movies` — listar filmes favoritos
+  - `GET /3/account/{account_id}/favorite/tv` — listar séries favoritas
+- Outros:
+  - Trending, Upcoming e detalhes (ex.: `/3/trending/movie/week`, `/3/movie/{id}`)
+
+> Observação: `src/configAxios.ts` já injeta `api_key` e `language=pt-BR` nas requisições.
+
+## 🧭 Como funcionam os favoritos
+
+1. O usuário faz login (fluxo TMDB) e a `session_id` é salva no `localStorage`.
+2. Ao favoritar, a aplicação chama `POST /3/account/{account_id}/favorite?session_id=...` com `{ media_type, media_id, favorite }`.
+3. A listagem em "Minha Coleção" usa os endpoints `GET /favorite/movies` e `GET /favorite/tv`.
+
+## 🧪 Testes
+
+- Atualmente não há testes automatizados configurados. Recomenda-se adicionar testes com Vitest + React Testing Library.
+
+## ♻️ Boas práticas e contribuição
+
+1. Fork → branch (`feat/` ou `fix/`) → PR claro
+2. Rodar `pnpm format` e `pnpm lint` antes de abrir PR
+3. Documentar mudanças e adicionar screenshots quando necessário
+
+## 🔜 Próximos passos sugeridos
+
+- Adicionar testes automatizados
+- Confirmação modal antes de remover favorito
+- Página de perfil/account com edição (implementada parcialmente no menu)
+- Otimização de imagens (WebP + blur-up)

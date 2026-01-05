@@ -3,6 +3,7 @@ import SearchMovie from '../layout/components/SearchMovie';
 import PageLayout from '../layout/PageLayout';
 import DetailsPage from '../pages/DetailsPage';
 import HomePage from '../pages/HomePage';
+import MyCollection from '../pages/MyCollection';
 import NotFoundPage from '../pages/NotFoundPage';
 import { ProtectedRoute } from './ProtectedRoute';
 
@@ -28,6 +29,11 @@ const routesPaginas = {
     {
       path: '/details/:media_type/:id',
       element: <DetailsPage />,
+      errorElement: <Loading />,
+    },
+    {
+      path: '/my-collection',
+      element: <MyCollection />,
       errorElement: <Loading />,
     },
   ],

@@ -83,7 +83,13 @@ export default function TrendingHero() {
         >
           {trendingMovies.map((movie, index) => (
             <SwiperSlide key={movie.id} className="rounded-xl overflow-hidden">
-              <div className="relative group transition-transform duration-300 shadow-lg hover:scale-103">
+              <a
+                href={`https://www.themoviedb.org/movie/${movie.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                title={`Abrir ${movie.title} no TMDB`}
+                className="relative group block transition-transform duration-300 shadow-lg hover:scale-103 focus:outline-none"
+              >
                 <div className="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded-full font-bold z-10">
                   #{index + 1}
                 </div>
@@ -116,7 +122,7 @@ export default function TrendingHero() {
                     {movie.overview}
                   </p>
                 </div>
-              </div>
+              </a>
             </SwiperSlide>
           ))}
           <button className="collection-swiper-button-next absolute top-1/2 right-2 z-10 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-gray-900/80 hover:bg-red-600 rounded-full transition-all duration-300 cursor-pointer">

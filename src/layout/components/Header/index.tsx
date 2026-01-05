@@ -4,14 +4,12 @@ import { useSearch } from '../../../context/FiltroContext';
 import Logo from '../../../components/Logo';
 import MenuUser from '../../../components/MenuUser';
 import { useNavigate } from 'react-router-dom';
-import { FiMenu } from 'react-icons/fi';
-import { IoClose } from 'react-icons/io5';
 import { motion, AnimatePresence } from 'framer-motion';
+import { FaX } from 'react-icons/fa6';
 
 export default function Header() {
   const { filtros, setFiltros } = useSearch();
   const [searchActive, setSearchActive] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleClearFilters = () => {
@@ -35,31 +33,6 @@ export default function Header() {
     else setSearchActive(false);
   }, [filtros.query]);
 
-  useEffect(() => {
-    if (searchActive) setMobileMenuOpen(false);
-  }, [searchActive]);
-
-  // Animations
-  const menuVariants = {
-    hidden: {
-      opacity: 0,
-      y: -20,
-      transition: {
-        staggerChildren: 0.05,
-        staggerDirection: -1,
-        when: 'afterChildren',
-      },
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.1,
-      },
-    },
-  };
-
   const searchVariants = {
     hidden: { opacity: 0, height: 0 },
     visible: { opacity: 1, height: 'auto' },
@@ -72,7 +45,7 @@ export default function Header() {
         <div className="hidden md:flex items-center justify-between h-16">
           {/* Logo + Navigation */}
           <div className="flex items-center space-x-8">
-            <Logo />
+            <Logo homeLink />
           </div>
 
           {/* Search + User */}
@@ -115,74 +88,44 @@ export default function Header() {
         </div>
 
         {/* Mobile Layout */}
-        <div className="md:hidden flex items-center justify-between h-16">
-          {/* Menu Hamburger */}
-          <motion.button
-            onClick={() => {
-              setMobileMenuOpen(!mobileMenuOpen);
-              setSearchActive(false);
-            }}
-            className="text-gray-300 hover:text-white p-2"
-            whileTap={{ scale: 0.9 }}
-            aria-label="Menu"
-          >
-            {mobileMenuOpen ? (
-              <IoClose size={24} className="text-red-500" />
-            ) : (
-              <FiMenu size={24} />
-            )}
-          </motion.button>
-
+        <div className="md:hidden min-h-16">
           {/* Logo */}
-          <motion.div whileHover={{ scale: 1.05 }}>
-            <Logo />
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            className="flex items-center justify-between gap-1 flex-wrap"
+          >
+            <Logo homeLink />
+            <MenuUser />
           </motion.div>
-
           {/* Icons */}
-          <div className="flex items-center space-x-4">
-            <motion.button
-              onClick={() => {
-                setSearchActive(!searchActive);
-                setMobileMenuOpen(false);
-              }}
-              className="text-gray-300 hover:text-white p-2"
-              whileTap={{ scale: 0.9 }}
-              aria-label="Buscar"
-            >
-              <BiSearch size={20} />
-            </motion.button>
-          </div>
-        </div>
-
-        {/* Mobile Menu Navigation */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              className="md:hidden overflow-hidden"
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              variants={menuVariants}
-            >
-              <motion.nav className="flex flex-col space-y-3 mt-4 bg-gray-900/90 rounded-lg p-4 backdrop-blur-sm">
-                <MenuUser />
-              </motion.nav>
-            </motion.div>
+          {!searchActive && (
+            <div className="flex items-center space-x-4">
+              <motion.button
+                onClick={() => {
+                  setSearchActive(!searchActive);
+                }}
+                className="text-gray-300 hover:text-white pt-4"
+                whileTap={{ scale: 0.9 }}
+                aria-label="Buscar"
+              >
+                <BiSearch size={20} />
+              </motion.button>
+            </div>
           )}
-        </AnimatePresence>
+        </div>
 
         {/* Mobile Search */}
         <AnimatePresence>
           {searchActive && (
             <motion.div
-              className="md:hidden overflow-hidden"
               initial="hidden"
               animate="visible"
               exit="hidden"
               variants={searchVariants}
+              className="md:hidden"
             >
-              <div className="relative mt-4">
-                <BiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <div className="relative">
+                <BiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   value={filtros.query || ''}
                   onChange={(e) =>
@@ -192,19 +135,17 @@ export default function Header() {
                     })
                   }
                   type="text"
-                  className="w-full bg-gray-800 text-white pl-10 pr-4 py-3 rounded-full focus:outline-none focus:ring-1 focus:ring-red-500"
+                  className="w-full bg-gray-800 text-white pl-12 pr-10 py-3 rounded-lg focus:outline-none focus:ring-1 focus:ring-red-500"
                   placeholder="Buscar filmes, séries..."
                   autoFocus
                 />
-                {filtros.query && (
-                  <motion.button
-                    onClick={handleClearFilters}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
-                    whileHover={{ scale: 1.2 }}
-                  >
-                    ×
-                  </motion.button>
-                )}
+                <button
+                  onClick={handleClearFilters}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-300 hover:text-white"
+                  aria-label="Limpar busca"
+                >
+                  <FaX size={10} />
+                </button>
               </div>
             </motion.div>
           )}

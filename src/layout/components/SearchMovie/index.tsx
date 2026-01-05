@@ -3,7 +3,8 @@ import { GiPopcorn } from 'react-icons/gi';
 import { useSearch } from '../../../context/FiltroContext';
 import CardBase from '../../../components/CardBase';
 import { API_URL_IMG_TMDB } from '../../../constants/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useEffect } from 'react';
 
 export default function SearchMovie() {
   const {
@@ -20,6 +21,39 @@ export default function SearchMovie() {
   } = useSearch();
 
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const q = searchParams.get('q') ?? searchParams.get('query') ?? '';
+    const t = searchParams.get('type') ?? '';
+    const page = searchParams.get('page') ?? undefined;
+
+    if (q || t) {
+      if (q !== (filtros.query || '') || t !== (filtros.type || '')) {
+        setFiltros({ query: q, type: t || filtros.type || 'multi', page });
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!filtros.query?.trim()) {
+      navigate('/', { replace: true });
+      return;
+    }
+
+    const params = new URLSearchParams();
+    if (filtros.query) params.set('q', filtros.query);
+    if (filtros.type) params.set('type', filtros.type);
+    if ((filtros as any).page) params.set('page', (filtros as any).page);
+
+    const search = params.toString();
+    const current =
+      typeof window !== 'undefined'
+        ? window.location.search.replace(/^\?/, '')
+        : '';
+    if (current !== search) navigate(`/search?${search}`, { replace: true });
+  }, [filtros.query, filtros.type]);
+
   const lists = {
     movie: listMovie,
     person: listPerson,
@@ -77,7 +111,7 @@ export default function SearchMovie() {
   ];
 
   return (
-    <section className="container mx-auto p-6">
+    <section className="mx-auto p-6">
       {loading && !isFetchingMore ? (
         <div className="flex flex-col items-center justify-center h-64">
           <div className="relative w-16 h-16 mb-4">
@@ -101,12 +135,12 @@ export default function SearchMovie() {
           <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
             <div className="flex items-center gap-3">
               <label className="text-sm text-gray-400">Tipo</label>
-              <div className="inline-flex bg-gray-900 rounded-full p-1">
+              <div className="inline-flex bg-gray-900 rounded-full p-1 flex-wrap">
                 {type.map((opt) => (
                   <button
                     key={opt.key}
                     onClick={() => setFiltros({ ...filtros, type: opt.key })}
-                    className={`px-3 py-1 rounded-full text-sm transition-all ${
+                    className={`px-3 py-1 rounded-full text-sm transition-all cursor-pointer ${
                       filtros.type === opt.key
                         ? 'bg-red-600 text-white shadow'
                         : 'text-gray-300 hover:bg-gray-800'
