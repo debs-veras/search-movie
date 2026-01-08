@@ -1,16 +1,16 @@
 import React, { lazy } from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import routesPaginas from './paginas';
+import NotFoundPage from '../pages/NotFoundPage';
 
 const Login = lazy(() => import('../pages/Login'));
-const NotFound = lazy(() => import('../pages/NotFoundPage'));
 
 function Router(): React.JSX.Element {
   const router = createBrowserRouter([
     {
       path: '/login',
       element: <Login />,
-      errorElement: <NotFound />,
+      errorElement: <NotFoundPage />,
     },
     routesPaginas,
   ]);

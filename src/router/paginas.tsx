@@ -1,4 +1,3 @@
-import Loading from '../components/Loading';
 import SearchMovie from '../layout/components/SearchMovie';
 import PageLayout from '../layout/PageLayout';
 import DetailsPage from '../pages/DetailsPage';
@@ -19,22 +18,22 @@ const routesPaginas = {
     {
       path: '/',
       element: <HomePage />,
-      errorElement: <Loading />,
+      errorElement: <NotFoundPage />,
     },
     {
       path: '/search',
       element: <SearchMovie />,
-      errorElement: <Loading />,
+      errorElement: <NotFoundPage />,
     },
     {
       path: '/details/:media_type/:id',
       element: <DetailsPage />,
-      errorElement: <Loading />,
+      errorElement: <NotFoundPage />,
     },
     {
       path: '/my-collection',
       element: <MyCollection />,
-      errorElement: <Loading />,
+      errorElement: <NotFoundPage />,
     },
   ],
 };
