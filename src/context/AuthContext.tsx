@@ -14,39 +14,12 @@ type AuthContextType = {
     username: string,
     password: string
   ) => Promise<{ success: boolean; message?: string }>;
-  logout: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    let mounted = true;
-    const init = async () => {
-      try {
-        const savedSession = storage.getSession();
-        if (!savedSession) return;
-        const accountResp = await getAccountDetails(savedSession);
-        if (accountResp && accountResp.success && mounted) {
-          const data = accountResp.data;
-          setUser({
-            id: data.id,
-            name: data.name,
-            username: data.username,
-            avatar_path: data.avatar?.tmdb?.avatar_path,
-          });
-        }
-      } catch (err) {
-        console.error('Erro ao carregar sessão do usuário', err);
-      }
-    };
-    init();
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   const login = async (username: string, password: string) => {
     try {
@@ -106,13 +79,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    storage.clearSession();
-  };
+  useEffect(() => {
+    let mounted = true;
+    const init = async () => {
+      try {
+        const savedSession = storage.getSession();
+        if (!savedSession) return;
+        const accountResp = await getAccountDetails(savedSession);
+        if (accountResp && accountResp.success && mounted) {
+          const data = accountResp.data;
+          setUser({
+            id: data.id,
+            name: data.name,
+            username: data.username,
+            avatar_path: data.avatar?.tmdb?.avatar_path,
+          });
+        }
+      } catch (err) {
+        console.error('Erro ao carregar sessão do usuário', err);
+      }
+    };
+    init();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login }}>
       {children}
     </AuthContext.Provider>
   );
