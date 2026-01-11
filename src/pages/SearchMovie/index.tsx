@@ -1,10 +1,11 @@
 import { BiSearch } from 'react-icons/bi';
 import { GiPopcorn } from 'react-icons/gi';
-import { useSearch } from '../../../context/FiltroContext';
-import CardBase from '../../../components/CardBase';
-import { API_URL_IMG_TMDB } from '../../../constants/api';
+import { useSearch } from '../../context/FiltroContext';
+import CardBase from '../../components/CardBase';
+import { API_URL_IMG_TMDB } from '../../constants/api';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect } from 'react';
+import { getImageUrl } from '../../utils/getImageFallback';
 
 export default function SearchMovie() {
   const {
@@ -23,43 +24,13 @@ export default function SearchMovie() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  useEffect(() => {
-    const q = searchParams.get('q') ?? searchParams.get('query') ?? '';
-    const t = searchParams.get('type') ?? '';
-    const page = searchParams.get('page') ?? undefined;
-
-    if (q || t) {
-      if (q !== (filtros.query || '') || t !== (filtros.type || '')) {
-        setFiltros({ query: q, type: t || filtros.type || 'multi', page });
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!filtros.query?.trim()) {
-      navigate('/', { replace: true });
-      return;
-    }
-
-    const params = new URLSearchParams();
-    if (filtros.query) params.set('q', filtros.query);
-    if (filtros.type) params.set('type', filtros.type);
-    if ((filtros as any).page) params.set('page', (filtros as any).page);
-
-    const search = params.toString();
-    const current =
-      typeof window !== 'undefined'
-        ? window.location.search.replace(/^\?/, '')
-        : '';
-    if (current !== search) navigate(`/search?${search}`, { replace: true });
-  }, [filtros.query, filtros.type]);
-
   const lists = {
     movie: listMovie,
     person: listPerson,
     tv: listSerie,
     multi: listMulti,
   };
+
   const currentList = lists[filtros.type || 'multi'] || [];
   const hasResults = currentList?.length > 0;
 
@@ -79,7 +50,7 @@ export default function SearchMovie() {
       src: `${imageBase}w500${path}`,
       srcSet: `${imageBase}w300${path} 300w, ${imageBase}w500${path} 500w, ${imageBase}original${path} 2000w`,
       sizes: '(min-width:1024px) 20vw, (min-width:768px) 25vw, 50vw',
-      fallback: isPerson ? 'avatar.png' : isMovie ? 'movie.png' : 'serie.png',
+      fallback: getImageUrl(item.media_type),
     };
 
     const title = item.title || item.name || 'Título Indisponível';
@@ -109,6 +80,35 @@ export default function SearchMovie() {
     { key: 'tv', label: 'Séries' },
     { key: 'person', label: 'Artistas' },
   ];
+
+  useEffect(() => {
+    const q = searchParams.get('q') ?? searchParams.get('query') ?? '';
+    const t = searchParams.get('type') ?? '';
+    const page = searchParams.get('page') ?? undefined;
+
+    if (q || t)
+      if (q !== (filtros.query || '') || t !== (filtros.type || ''))
+        setFiltros({ query: q, type: t || filtros.type || 'multi', page });
+  }, []);
+
+  useEffect(() => {
+    if (!filtros.query?.trim()) {
+      navigate('/', { replace: true });
+      return;
+    }
+
+    const params = new URLSearchParams();
+    if (filtros.query) params.set('q', filtros.query);
+    if (filtros.type) params.set('type', filtros.type);
+    if ((filtros as any).page) params.set('page', (filtros as any).page);
+
+    const search = params.toString();
+    const current =
+      typeof window !== 'undefined'
+        ? window.location.search.replace(/^\?/, '')
+        : '';
+    if (current !== search) navigate(`/search?${search}`, { replace: true });
+  }, [filtros.query, filtros.type]);
 
   return (
     <section className="mx-auto p-6">

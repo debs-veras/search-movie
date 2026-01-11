@@ -3,7 +3,7 @@ import { FaStar } from 'react-icons/fa';
 import { getReleasedSoon } from '../../../services/movieRequest';
 import ErrorSection from '../../../components/ErrorSection';
 import SkeletonReleasedSoon from './SkeletonReleasedSoon';
-import { API_URL_IMG_TMDB } from '../../../constants/api';
+import { API_URL_IMG_TMDB, URL_TMDB } from '../../../constants/api';
 
 interface ReleasedSoon {
   id: number;
@@ -31,13 +31,9 @@ export default function ReleasedSoon() {
     searchReleasedSoon();
   }, []);
 
-  if (isLoading) {
-    return <SkeletonReleasedSoon />;
-  }
+  if (isLoading) return <SkeletonReleasedSoon />;
 
-  if (error) {
-    return <ErrorSection error={error} onRetry={searchReleasedSoon} />;
-  }
+  if (error) return <ErrorSection error={error} onRetry={searchReleasedSoon} />;
 
   return (
     <section className="relative py-16 px-4 sm:px-8 bg-gradient-to-br from-[#000] to-[#111827] ">
@@ -52,7 +48,7 @@ export default function ReleasedSoon() {
           {releasedSoon.map((filme) => (
             <a
               key={filme.id}
-              href={`https://www.themoviedb.org/movie/${filme.id}`}
+              href={`${URL_TMDB}/movie/${filme.id}`}
               target="_blank"
               rel="noopener noreferrer"
               className="group relative rounded-xl overflow-hidden border border-white/10 backdrop-blur-md bg-white/5 transition-transform hover:scale-[1.02] hover:shadow-lg"

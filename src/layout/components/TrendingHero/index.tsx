@@ -7,7 +7,7 @@ import 'swiper/css/navigation';
 import { getTrendingHero } from '../../../services/movieRequest';
 import ErrorSection from '../../../components/ErrorSection';
 import SkeletonTrendingHero from './SkeletonTrendingHero';
-import { API_URL_IMG_TMDB } from '../../../constants/api';
+import { API_URL_IMG_TMDB, URL_TMDB } from '../../../constants/api';
 
 type TrendingHero = {
   id: number;
@@ -84,7 +84,7 @@ export default function TrendingHero() {
           {trendingMovies.map((movie, index) => (
             <SwiperSlide key={movie.id} className="rounded-xl overflow-hidden">
               <a
-                href={`https://www.themoviedb.org/movie/${movie.id}`}
+                href={`${URL_TMDB}/movie/${movie.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 title={`Abrir ${movie.title} no TMDB`}

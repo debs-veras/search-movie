@@ -137,6 +137,7 @@ export default function DetailsPage() {
   const backdropImageSrc = details?.backdrop_path
     ? `${API_URL_IMG_TMDB}/original${details.backdrop_path}`
     : null;
+
   const backdropImageSrcSet = details?.backdrop_path
     ? `${API_URL_IMG_TMDB}/w780${details.backdrop_path} 780w, ${API_URL_IMG_TMDB}/w1280${details.backdrop_path} 1280w, ${API_URL_IMG_TMDB}/w1920${details.backdrop_path} 1920w, ${API_URL_IMG_TMDB}/original${details.backdrop_path} 3840w`
     : null;
@@ -242,7 +243,7 @@ export default function DetailsPage() {
         {backdropImageSrc && (
           <div className="absolute inset-0 z-0">
             <img
-              src={backdropImageSrc ?? getImageUrl(media_type)}
+              src={backdropImageSrc}
               srcSet={backdropImageSrcSet ?? undefined}
               sizes="100vw"
               alt={title}
@@ -253,6 +254,7 @@ export default function DetailsPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-gray-900/40" />
           </div>
         )}
+
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8">
           <div className="grid lg:grid-cols-3 gap-8 items-start">
             {/* Poster */}

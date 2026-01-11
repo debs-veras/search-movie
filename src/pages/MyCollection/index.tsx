@@ -10,6 +10,7 @@ import storage from '../../utils/storage';
 import useToastLoading from '../../hooks/useToastLoading';
 import { FaTimes, FaSpinner, FaStar } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { getImageUrl } from '../../utils/getImageFallback';
 
 type MediaItem = {
   id: number;
@@ -178,7 +179,7 @@ export default function MyCollection() {
                       src={
                         item.poster_path
                           ? `${API_URL_IMG_TMDB}/w300${item.poster_path}`
-                          : '/placeholder-movie.jpg'
+                          : getImageUrl(activeTab === 'movies' ? 'movie' : 'tv')
                       }
                       alt={item.title || item.name}
                       className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-105"

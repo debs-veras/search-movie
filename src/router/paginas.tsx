@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-import SearchMovie from '../layout/components/SearchMovie';
+import SearchMovie from '../pages/SearchMovie';
 import PageLayout from '../layout/PageLayout';
 import NotFoundPage from '../pages/NotFoundPage';
 import { ProtectedRoute } from './ProtectedRoute';

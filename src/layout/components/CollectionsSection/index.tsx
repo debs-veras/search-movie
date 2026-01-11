@@ -14,6 +14,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import axios from 'axios';
+import {
+  API_URL_IMG_TMDB,
+  API_URL_TMDB,
+  URL_TMDB,
+} from '../../../constants/api';
+import { getImageUrl } from '../../../utils/getImageFallback';
 
 interface Collection {
   id: number;
@@ -33,8 +39,8 @@ interface Movie {
   overview: string;
 }
 
-const API_KEY = 'c82e5a4a26d33a1e3ca752a5daa59d54';
-const BASE_URL = 'https://api.themoviedb.org/3';
+const API_KEY = import.meta.env.VITE_API_KEY;
+const BASE_URL = `${API_URL_TMDB}3`;
 
 const backdropVariants = {
   hidden: { opacity: 0 },
@@ -114,7 +120,7 @@ export default function CollectionsSection() {
   };
 
   const handleMovieClick = (movieId: number) => {
-    window.open(`https://www.themoviedb.org/movie/${movieId}`, '_blank');
+    window.open(`${URL_TMDB}movie/${movieId}`, '_blank');
   };
 
   const handleImageLoad = () => {
@@ -179,7 +185,11 @@ export default function CollectionsSection() {
               >
                 <div className="relative group rounded-xl overflow-hidden border border-gray-800 hover:border-red-600 transition-all duration-300 h-80">
                   <img
-                    src={`https://image.tmdb.org/t/p/w1280${collection.backdrop_path}`}
+                    src={
+                      collection.backdrop_path
+                        ? `${API_URL_IMG_TMDB}w1280${collection.backdrop_path}`
+                        : getImageUrl('movie')
+                    }
                     alt={collection.name}
                     className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-500"
                   />
@@ -232,7 +242,6 @@ export default function CollectionsSection() {
           >
             <motion.div
               className="relative bg-gray-900 rounded-xl border border-gray-700 max-w-4xl w-full h-[90vh] flex flex-col"
-              // variants={modalVariants}
               onClick={(e) => e.stopPropagation()}
               ref={modalContentRef}
             >
@@ -243,7 +252,11 @@ export default function CollectionsSection() {
                     <div className="absolute inset-0 bg-gray-800 animate-pulse rounded-t-xl"></div>
                   )}
                   <img
-                    src={`https://image.tmdb.org/t/p/original${selectedCollection.backdrop_path}`}
+                    src={
+                      selectedCollection.backdrop_path
+                        ? `${API_URL_IMG_TMDB}original${selectedCollection.backdrop_path}`
+                        : getImageUrl('movie')
+                    }
                     alt={selectedCollection.name}
                     className="w-full h-full object-cover"
                     onLoad={handleImageLoad}
@@ -302,8 +315,8 @@ export default function CollectionsSection() {
                             <img
                               src={
                                 movie.poster_path
-                                  ? `https://image.tmdb.org/t/p/w154${movie.poster_path}`
-                                  : '/placeholder-movie.jpg'
+                                  ? `${API_URL_IMG_TMDB}w154${movie.poster_path}`
+                                  : getImageUrl('movie')
                               }
                               alt={movie.title}
                               className="w-16 h-24 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300 shadow-lg"
