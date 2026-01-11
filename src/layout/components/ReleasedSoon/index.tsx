@@ -24,7 +24,7 @@ export default function ReleasedSoon() {
     setIsLoading(false);
 
     if (response.success) setReleasedSoon(response.data.results.slice(0, 5));
-    else setError(response.data);
+    else setError(response.message);
   };
 
   useEffect(() => {

@@ -1,10 +1,12 @@
+import { lazy } from 'react';
 import SearchMovie from '../layout/components/SearchMovie';
 import PageLayout from '../layout/PageLayout';
-import DetailsPage from '../pages/DetailsPage';
-import HomePage from '../pages/HomePage';
-import MyCollection from '../pages/MyCollection';
 import NotFoundPage from '../pages/NotFoundPage';
 import { ProtectedRoute } from './ProtectedRoute';
+import DetailsPage from '../pages/DetailsPage';
+import MyCollection from '../pages/MyCollection';
+
+const HomePage = lazy(() => import('../pages/HomePage'));
 
 const routesPaginas = {
   path: '/',

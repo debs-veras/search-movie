@@ -12,14 +12,14 @@ export const storage = {
     try {
       localStorage.setItem(SESSION_KEY, sessionId);
     } catch {
-      /* noop */
+      return null;
     }
   },
   clearSession() {
     try {
       localStorage.removeItem(SESSION_KEY);
     } catch {
-      /* noop */
+      return null;
     }
   },
 };

@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!tokenResp?.data?.success) {
         return {
           success: false,
-          message: tokenResp?.data || 'Erro obtendo token',
+          message: tokenResp?.message,
         };
       }
 
@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!validateResp?.success && !validateResp?.data?.success) {
         return {
           success: false,
-          message: validateResp?.data || 'Falha ao validar credenciais',
+          message: validateResp?.message,
         };
       }
 
@@ -77,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!sessionResp?.success) {
         return {
           success: false,
-          message: sessionResp?.data || 'Falha ao criar sessão',
+          message: sessionResp?.message,
         };
       }
 
@@ -98,12 +98,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         return {
           success: false,
-          message: 'Não foi possível obter dados da conta',
+          message: accountResp.message,
         };
       }
     } catch (error: any) {
-      console.error('Erro no login', error);
-      return { success: false, message: error?.message || 'Erro desconhecido' };
+      return { success: false, message: error?.message };
     }
   };
 

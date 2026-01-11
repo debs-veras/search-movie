@@ -65,10 +65,10 @@ export default function Login() {
 
   const handleLogin = handleSubmit(async (data) => {
     setLoading(true);
-    toastLoading({ mensagem: 'Verificando usuário' });
-    const result = await login(data.username, data.password);
+    toastLoading({ mensagem: 'Verificando usuário...' });
+    const response = await login(data.username, data.password);
 
-    if (result.success) {
+    if (response.success) {
       toastLoading({
         mensagem: 'Login realizado com sucesso',
         tipo: 'success',
@@ -76,7 +76,7 @@ export default function Login() {
       });
     } else {
       toastLoading({
-        mensagem: result.message || 'Erro no login',
+        mensagem: response.message,
         tipo: 'error',
       });
     }

@@ -26,7 +26,6 @@ export default function MyCollection() {
   const session = storage.getSession();
   const toast = useToastLoading();
   const navigate = useNavigate();
-
   const [activeTab, setActiveTab] = useState<'movies' | 'tv'>('movies');
   const [items, setItems] = useState<MediaItem[]>([]);
   const [page, setPage] = useState(1);
@@ -48,40 +47,32 @@ export default function MyCollection() {
     if (p === 1) setLoading(true);
     else setLoadingMore(true);
 
-    try {
-      const accountId = user.id;
-      const resp =
-        activeTab === 'movies'
-          ? await getFavoriteMovies(accountId, session, p)
-          : await getFavoriteTV(accountId, session, p);
+    const accountId = user.id;
+    const response =
+      activeTab === 'movies'
+        ? await getFavoriteMovies(accountId, session, p)
+        : await getFavoriteTV(accountId, session, p);
 
-      if (resp?.success && resp.data) {
-        const results = resp.data.results || [];
-        setItems((prev) => (p === 1 ? results : [...prev, ...results]));
-        setTotalPages(resp.data.total_pages || 1);
-        setTotalResults(resp.data.total_results || results.length || 0);
-        setPage(p);
-      } else {
-        toast({
-          mensagem: resp.data || 'Erro ao carregar favoritos',
-          tipo: 'error',
-        });
-      }
-    } catch {
+    if (response?.success && response.data) {
+      const results = response.data.results || [];
+      setItems((prev) => (p === 1 ? results : [...prev, ...results]));
+      setTotalPages(response.data.total_pages || 1);
+      setTotalResults(response.data.total_results || results.length || 0);
+      setPage(p);
+    } else {
       toast({
-        mensagem: 'Erro ao carregar favoritos',
+        mensagem: response.data,
         tipo: 'error',
       });
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
     }
+
+    setLoading(false);
+    setLoadingMore(false);
   };
 
   useEffect(() => {
     // Recarrega quando trocar de aba ou quando o usuário/sessão mudarem
     fetchPage(1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, user?.id, session]);
 
   const loadMore = () => {
@@ -89,50 +80,29 @@ export default function MyCollection() {
   };
 
   const handleRemoveFavorite = async (media_id: number) => {
-    if (!user || !session) {
-      navigate('/login');
-      return;
-    }
+    if (!user || !session) return;
+    toast({ mensagem: 'Removendo...' });
     setProcessing(true);
-    try {
-      const resp = await markAsFavorite(
-        user.id,
-        session,
-        activeTab === 'movies' ? 'movie' : 'tv',
-        media_id,
-        false
-      );
-      if (resp?.success) {
-        setItems((prev) => prev.filter((i) => i.id !== media_id));
-        toast({ mensagem: 'Removido dos favoritos', tipo: 'success' });
-      } else {
-        toast({
-          mensagem: resp.data || 'Erro ao atualizar favorito',
-          tipo: 'error',
-        });
-      }
-    } catch {
-      toast({
-        mensagem: 'Erro ao atualizar favorito',
-        tipo: 'error',
-      });
-    } finally {
-      setProcessing(false);
-    }
-  };
+    const data = {
+      accountI: user.id,
+      session_id: session,
+      media_type: activeTab === 'movies' ? 'movie' : 'tv',
+      media_id: media_id,
+      favorite: false,
+    };
+    const response = await markAsFavorite(data);
+    toast({ tipo: 'dismiss' });
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold">Acesse sua conta</h2>
-          <p className="text-gray-400 mt-2">
-            Faça login para ver seus favoritos.
-          </p>
-        </div>
-      </div>
-    );
-  }
+    if (response?.success)
+      setItems((prev) => prev.filter((i) => i.id !== media_id));
+
+    toast({
+      mensagem: response.message,
+      tipo: response.success ? 'success' : 'error',
+    });
+
+    setProcessing(false);
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">

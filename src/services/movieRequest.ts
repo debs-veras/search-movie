@@ -18,19 +18,13 @@ export const getAccountStates = async (
   );
 };
 
-export const markAsFavorite = async (
-  accountId: number,
-  session_id: string,
-  media_type: 'movie' | 'tv',
-  media_id: number,
-  favorite: boolean
-) => {
+export const markAsFavorite = async (data: any) => {
   return await postRequest(
-    `/3/account/${accountId}/favorite?session_id=${session_id}`,
+    `/3/account/${data.accountId}/favorite?session_id=${data.session_id}`,
     {
-      media_type,
-      media_id,
-      favorite,
+      media_type: data.media_type,
+      media_id: data.media_id,
+      favorite: data.favorite,
     }
   );
 };
@@ -41,7 +35,7 @@ export const getFavoriteMovies = async (
   page = 1
 ) => {
   return await getRequest(
-    `/3/account/${accountId}/favorite/movies?session_id=${session_id}&language=pt-BR&page=${page}`
+    `/3/account/${accountId}/favorite/movies?session_id=${session_id}&page=${page}`
   );
 };
 
@@ -51,6 +45,6 @@ export const getFavoriteTV = async (
   page = 1
 ) => {
   return await getRequest(
-    `/3/account/${accountId}/favorite/tv?session_id=${session_id}&language=pt-BR&page=${page}`
+    `/3/account/${accountId}/favorite/tv?session_id=${session_id}&page=${page}`
   );
 };

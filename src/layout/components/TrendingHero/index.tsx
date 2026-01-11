@@ -30,7 +30,7 @@ export default function TrendingHero() {
     setIsLoading(false);
 
     if (response.success) setTrendingMovies(response.data.results.slice(0, 10));
-    else setError(response.data);
+    else setError(response.message);
   };
 
   useEffect(() => {

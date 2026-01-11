@@ -24,7 +24,7 @@ type SearchContextType = {
 
 const SearchContext = createContext({} as SearchContextType);
 
-// ===== Normalizadores =====
+// ===== Normalizadores - garantem que o app sempre recebe dados no formato certo =====
 const normalizeMovie = (data: any): MovieResult => ({
   id: data.id,
   title: data.title || '',
@@ -222,6 +222,11 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
     500
   );
 
+  // Paginação (carregar mais)
+  const fetchMore = async () => {
+    await SearchMovieData(false);
+  };
+
   // Efeito: executa busca quando filtros mudam
   useEffect(() => {
     setLoading(true);
@@ -236,11 +241,6 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
       if (abortRef.current) abortRef.current.abort();
     };
   }, []);
-
-  // Paginação (carregar mais)
-  const fetchMore = async () => {
-    await SearchMovieData(false);
-  };
 
   return (
     <SearchContext.Provider

@@ -20,11 +20,8 @@ export default function Header() {
 
   // redireciona automaticamente para /search ou /
   useEffect(() => {
-    if (filtros.query?.trim() !== '') {
-      navigate('/search');
-    } else {
-      navigate('/');
-    }
+    if (filtros.query?.trim() !== '') navigate('/search');
+    else navigate('/');
   }, [filtros.query, navigate]);
 
   // mantém o campo de busca ativo enquanto há query

@@ -32,11 +32,7 @@ export default function MenuUser() {
 
     if (response.success) {
       storage.clearSession();
-      try {
-        localStorage.removeItem('@user');
-      } catch {
-        /* noop */
-      }
+      localStorage.removeItem('@user');
       navigate('/login');
     } else {
       toastLoading({

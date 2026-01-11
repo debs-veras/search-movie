@@ -11,12 +11,13 @@ import {
 import { BiTime, BiWorld } from 'react-icons/bi';
 import { getDetails } from '../../services/searchRequest';
 import { getAccountStates, markAsFavorite } from '../../services/movieRequest';
-import { API_URL_IMG_TMDB } from '../../constants/api';
+import { API_URL_IMG_TMDB, URL_TMDB } from '../../constants/api';
 import ErrorSection from '../../components/ErrorSection';
 import { getImageUrl } from '../../utils/getImageFallback';
 import storage from '../../utils/storage';
 import useToastLoading from '../../hooks/useToastLoading';
 import { useAuth } from '../../context/AuthContext';
+import Loading from '../../components/Loading';
 
 interface DetailsData {
   id: number;
@@ -71,7 +72,6 @@ export default function DetailsPage() {
   const [details, setDetails] = useState<DetailsData | null>(null);
   const [trailer, setTrailer] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [showTrailer, setShowTrailer] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'cast'>('overview');
   const [showWorks, setShowWorks] = useState(false);
@@ -79,42 +79,53 @@ export default function DetailsPage() {
   // Favoritos
   const [isFavorited, setIsFavorited] = useState(false);
   const [favProcessing, setFavProcessing] = useState(false);
-  const toastLoading = useToastLoading();
+  const toast = useToastLoading();
   const { user } = useAuth();
 
   const fetchData = async () => {
-    if (!id || !media_type) {
-      setError('ID ou tipo de mídia não encontrado');
-      setLoading(false);
-      return;
-    }
-    const response = await getDetails(media_type, id);
-    if (response.success) {
-      setDetails(response.data);
-      // Encontrar trailer
-      const trailerVideo = response.data.videos?.results?.find(
+    try {
+      setLoading(true);
+
+      if (!id || !media_type)
+        throw new Error('ID ou tipo de mídia não encontrado');
+
+      const response = await getDetails(media_type, id);
+
+      if (!response.success) throw new Error(response.message);
+
+      const data = response.data;
+      setDetails(data);
+
+      // Trailer
+      const trailerVideo = data.videos?.results?.find(
         (v: any) => v.type === 'Trailer' && v.site === 'YouTube'
       );
+
       if (trailerVideo) setTrailer(trailerVideo.key);
 
-      // Verificar se já está favoritado (apenas para filmes/séries)
+      // Favorito
       const session = storage.getSession();
       if (session && media_type !== 'person') {
-        try {
-          const accountStates = await getAccountStates(
-            media_type,
-            Number(id),
-            session
-          );
-          if (accountStates?.success && accountStates.data) {
-            setIsFavorited(!!accountStates.data.favorite);
-          }
-        } catch (err) {
-          console.error('Erro ao obter estado da conta', err);
-        }
+        const accountStates = await getAccountStates(
+          media_type,
+          Number(id),
+          session
+        );
+
+        if (!accountStates?.success)
+          throw new Error(accountStates?.message || 'Erro ao buscar favoritos');
+
+        setIsFavorited(!!accountStates.data?.favorite);
       }
-    } else setError(response.data);
-    setLoading(false);
+    } catch (error: any) {
+      toast({
+        mensagem: error.message || 'Erro inesperado',
+        tipo: 'error',
+      });
+      navigate('/');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const isPerson = media_type === 'person';
@@ -135,6 +146,7 @@ export default function DetailsPage() {
   const formattedDate = releaseDate
     ? new Date(releaseDate).toLocaleDateString('pt-BR')
     : null;
+
   const year = releaseDate ? new Date(releaseDate).getFullYear() : null;
 
   const getRuntime = () => {
@@ -156,41 +168,26 @@ export default function DetailsPage() {
 
   const handleAddToList = async () => {
     const session = storage.getSession();
-    if (!session) {
-      navigate('/login');
-      return;
-    }
-
-    if (!user) {
-      toastLoading({ mensagem: 'Usuário não encontrado', tipo: 'error' });
-      return;
-    }
-
+    if (!session || !user) return;
     setFavProcessing(true);
-
     const accountId = user.id;
-    const resp = await markAsFavorite(
+    const data = {
       accountId,
-      session,
-      media_type as 'movie' | 'tv',
-      Number(id),
-      !isFavorited
-    );
+      session_id: session,
+      media_type: media_type as 'movie' | 'tv',
+      media_id: Number(id),
+      favorite: !isFavorited,
+    };
 
-    if (resp?.success) {
-      setIsFavorited(!isFavorited);
-      toastLoading({
-        mensagem: !isFavorited
-          ? 'Adicionado aos favoritos'
-          : 'Removido dos favoritos',
-        tipo: 'success',
-      });
-    } else {
-      toastLoading({
-        mensagem: resp.data || 'Erro ao atualizar favoritos',
-        tipo: 'error',
-      });
-    }
+    const response = await markAsFavorite(data);
+
+    if (response?.success) setIsFavorited(!isFavorited);
+
+    toast({
+      mensagem: response.message,
+      tipo: response.success ? 'success' : 'error',
+    });
+
     setFavProcessing(false);
   };
 
@@ -229,29 +226,19 @@ export default function DetailsPage() {
 
   useEffect(() => {
     fetchData();
-  }, [id, media_type]);
+  }, [id]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-red-600"></div>
-          <p className="text-gray-400 text-lg">Carregando detalhes...</p>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <Loading />;
 
-  if (error || !details)
-    return (
-      <ErrorSection error={error ?? 'Nada encontrado'} onRetry={fetchData} />
-    );
+  if (!details)
+    return <ErrorSection error={'Nada encontrado'} onRetry={fetchData} />;
 
   return (
     <>
       {/* Hero Section */}
       <div className="relative pt-20">
         {/* Background */}
+
         {backdropImageSrc && (
           <div className="absolute inset-0 z-0">
             <img
@@ -266,7 +253,6 @@ export default function DetailsPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-gray-900/40" />
           </div>
         )}
-
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8">
           <div className="grid lg:grid-cols-3 gap-8 items-start">
             {/* Poster */}
@@ -376,7 +362,7 @@ export default function DetailsPage() {
                   </button>
                 )}
                 <a
-                  href={`https://www.themoviedb.org/${media_type}/${details.id}`}
+                  href={`${URL_TMDB}/${media_type}/${details.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 px-6 py-3 bg-yellow-600 hover:bg-yellow-700 rounded-lg font-semibold transition-all duration-300 cursor-pointer"
@@ -522,7 +508,7 @@ export default function DetailsPage() {
                           src={
                             person.profile_path
                               ? `${API_URL_IMG_TMDB}/w300${person.profile_path}`
-                              : '/avatar.png'
+                              : getImageUrl('person')
                           }
                           alt={person.name}
                           className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300"
