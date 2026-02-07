@@ -1,4 +1,4 @@
-import { getRequest, postRequest } from '../utils/axiosRequest';
+import { deleteRequest, getRequest, postRequest } from '../utils/axiosRequest';
 
 export const getReleasedSoon = async () => {
   return await getRequest(`/3/movie/upcoming`);
@@ -46,5 +46,27 @@ export const getFavoriteTV = async (
 ) => {
   return await getRequest(
     `/3/account/${accountId}/favorite/tv?session_id=${session_id}&page=${page}`
+  );
+};
+
+export const addRating = async (
+  media_type: string,
+  media_id: number,
+  session_id: string,
+  value: number
+) => {
+  return await postRequest(
+    `/3/${media_type}/${media_id}/rating?session_id=${session_id}`,
+    { value }
+  );
+};
+
+export const deleteRating = async (
+  media_type: string,
+  media_id: number,
+  session_id: string
+) => {
+  return await deleteRequest(
+    `/3/${media_type}/${media_id}/rating?session_id=${session_id}`
   );
 };

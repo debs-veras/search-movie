@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   FaStar,
+  FaStarHalfAlt,
+  FaRegStar,
   FaPlay,
   FaCalendarAlt,
   FaImdb,
@@ -10,7 +12,12 @@ import {
 } from 'react-icons/fa';
 import { BiTime, BiWorld } from 'react-icons/bi';
 import { getDetails } from '../../services/searchRequest';
-import { getAccountStates, markAsFavorite } from '../../services/movieRequest';
+import {
+  addRating,
+  deleteRating,
+  getAccountStates,
+  markAsFavorite,
+} from '../../services/movieRequest';
 import { API_URL_IMG_TMDB, URL_TMDB } from '../../constants/api';
 import ErrorSection from '../../components/ErrorSection';
 import { getImageUrl } from '../../utils/getImageFallback';
@@ -79,6 +86,9 @@ export default function DetailsPage() {
   // Favoritos
   const [isFavorited, setIsFavorited] = useState(false);
   const [favProcessing, setFavProcessing] = useState(false);
+  const [userRating, setUserRating] = useState<number | null>(null);
+  const [ratingHover, setRatingHover] = useState<number | null>(null);
+  const [ratingProcessing, setRatingProcessing] = useState(false);
   const toast = useToastLoading();
   const { user } = useAuth();
 
@@ -116,6 +126,9 @@ export default function DetailsPage() {
           throw new Error(accountStates?.message || 'Erro ao buscar favoritos');
 
         setIsFavorited(!!accountStates.data?.favorite);
+        const ratedValue = accountStates.data?.rated?.value;
+        if (typeof ratedValue === 'number') setUserRating(ratedValue / 2);
+        else setUserRating(null);
       }
     } catch (error: any) {
       toast({
@@ -192,6 +205,48 @@ export default function DetailsPage() {
     setFavProcessing(false);
   };
 
+  const handleRate = async (value: number) => {
+    const session = storage.getSession();
+    if (!session || !user || !media_type || !id) {
+      toast({ mensagem: 'Faça login para avaliar.', tipo: 'error' });
+      return;
+    }
+
+    setRatingProcessing(true);
+    const response = await addRating(
+      media_type,
+      Number(id),
+      session,
+      value * 2
+    );
+
+    if (response?.success) setUserRating(value);
+
+    toast({
+      mensagem: response.message,
+      tipo: response.success ? 'success' : 'error',
+    });
+
+    setRatingProcessing(false);
+  };
+
+  const handleRemoveRating = async () => {
+    const session = storage.getSession();
+    if (!session || !user || !media_type || !id) return;
+    setRatingProcessing(true);
+
+    const response = await deleteRating(media_type, Number(id), session);
+
+    if (response?.success) setUserRating(null);
+
+    toast({
+      mensagem: response.message,
+      tipo: response.success ? 'success' : 'error',
+    });
+
+    setRatingProcessing(false);
+  };
+
   const personCreditsCast =
     (details as any)?.combined_credits?.cast ??
     (details as any)?.credits?.cast ??
@@ -233,6 +288,8 @@ export default function DetailsPage() {
 
   if (!details)
     return <ErrorSection error={'Nada encontrado'} onRetry={fetchData} />;
+
+  const ratingValue = ratingHover ?? userRating ?? 0;
 
   return (
     <>
@@ -362,6 +419,61 @@ export default function DetailsPage() {
                     {isFavorited ? <FaStar /> : <FaPlus />}
                     {isFavorited ? 'Favorito' : 'Adicionar a Minha Lista'}
                   </button>
+                )}
+                {!isPerson && user && (
+                  <div className="flex items-center gap-3 bg-gray-900/60 border border-gray-700 px-4 py-3 rounded-lg">
+                    <div
+                      className="flex items-center gap-1"
+                      onMouseLeave={() => setRatingHover(null)}
+                    >
+                      {[1, 2, 3, 4, 5].map((star) => {
+                        const isFull = ratingValue >= star;
+                        const isHalf = !isFull && ratingValue >= star - 0.5;
+                        return (
+                          <div key={star} className="relative w-6 h-6">
+                            <span className="text-yellow-400">
+                              {isFull ? (
+                                <FaStar />
+                              ) : isHalf ? (
+                                <FaStarHalfAlt />
+                              ) : (
+                                <FaRegStar />
+                              )}
+                            </span>
+                            <button
+                              type="button"
+                              aria-label={`Avaliar ${star - 0.5} estrelas`}
+                              disabled={ratingProcessing}
+                              onMouseEnter={() => setRatingHover(star - 0.5)}
+                              onClick={() => handleRate(star - 0.5)}
+                              className="absolute inset-y-0 left-0 w-1/2 cursor-pointer"
+                            />
+                            <button
+                              type="button"
+                              aria-label={`Avaliar ${star} estrelas`}
+                              disabled={ratingProcessing}
+                              onMouseEnter={() => setRatingHover(star)}
+                              onClick={() => handleRate(star)}
+                              className="absolute inset-y-0 right-0 w-1/2 cursor-pointer"
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <div className="text-sm text-gray-300">
+                      {userRating ? `${userRating.toFixed(1)}/5` : 'Avalie'}
+                    </div>
+                    {userRating && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveRating}
+                        disabled={ratingProcessing}
+                        className="text-xs text-red-400 hover:text-red-300"
+                      >
+                        Remover
+                      </button>
+                    )}
+                  </div>
                 )}
                 <a
                   href={`${URL_TMDB}/${media_type}/${details.id}`}
