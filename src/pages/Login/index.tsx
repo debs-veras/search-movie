@@ -226,10 +226,18 @@ export default function Login() {
         </form>
 
         {/* Rodapé */}
-        <div className="mt-8 text-center">
+        <div className="mt-8 text-center space-y-3">
           <p className="text-xs text-gray-500 flex items-center justify-center">
             Sua jornada cinematográfica começa aqui
           </p>
+          <a
+            href="https://www.themoviedb.org/signup"
+            target="_blank"
+            rel="noreferrer"
+            className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+          >
+            Criar conta no TMDB
+          </a>
         </div>
       </div>
     </div>
