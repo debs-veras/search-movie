@@ -281,8 +281,13 @@ export default function DetailsPage() {
   const displayedWorks = uniqueWorks.slice(0, 24);
 
   useEffect(() => {
+    setTrailer(null);
+    setShowTrailer(false);
+    setActiveTab('overview');
+    setIsFavorited(false);
+    setUserRating(null);
     fetchData();
-  }, [id]);
+  }, [id, media_type]);
 
   if (loading) return <Loading />;
 
