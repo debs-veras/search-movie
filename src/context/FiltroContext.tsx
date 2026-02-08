@@ -94,6 +94,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   const [filtros, setFiltros] = useState<SearchFormInputs>({
     query: '',
     type: '',
+    page: null,
   });
   const [listMovie, setListMovie] = useState<MovieResult[] | null>(null);
   const [listPerson, setListPerson] = useState<PersonResult[] | null>(null);
@@ -110,11 +111,17 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   const CACHE_TTL = 60_000;
 
   const buildCacheKey = (q: string, t: string, p: number) => `${q}|${t}|${p}`;
+
   const buildParams = (q: string, p: number) => {
     const params = new URLSearchParams();
     params.append('query', q);
     params.append('page', String(p));
     return params.toString();
+  };
+
+  const parsePage = (value: string | null | undefined) => {
+    const parsed = Number.parseInt(value ?? '', 10);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
   };
 
   const toggleLoading = (main = true, value = false) => {
@@ -132,10 +139,11 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   const SearchMovieData = async (reset = true) => {
     if (!filtros.query || !filtros.type) {
       setHasMore(false);
+      toggleLoading(reset, false);
       return;
     }
 
-    const currentPage = reset ? 1 : page;
+    const currentPage = reset ? parsePage(filtros.page) : page;
     toggleLoading(reset, true);
 
     const cacheKey = buildCacheKey(filtros.query, filtros.type, currentPage);
@@ -224,12 +232,15 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
 
   // Paginação (carregar mais)
   const fetchMore = async () => {
+    if (loading || isFetchingMore || !hasMore) return;
     await SearchMovieData(false);
   };
 
   // Efeito: executa busca quando filtros mudam
   useEffect(() => {
     setLoading(true);
+    setHasMore(true);
+    setPage(parsePage(filtros.page));
     clearLists();
     debouncedSearch();
     return cancelDebounce;

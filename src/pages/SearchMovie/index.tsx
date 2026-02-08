@@ -86,10 +86,12 @@ export default function SearchMovie() {
     const t = searchParams.get('type') ?? '';
     const page = searchParams.get('page') ?? undefined;
 
-    if (q || t)
-      if (q !== (filtros.query || '') || t !== (filtros.type || ''))
-        setFiltros({ query: q, type: t || filtros.type || 'multi', page });
-  }, []);
+    if (q || t) {
+      const nextType = t || 'multi';
+      const nextPage = page ?? null;
+      setFiltros({ query: q, type: nextType, page: nextPage });
+    }
+  }, [searchParams, setFiltros]);
 
   useEffect(() => {
     if (!filtros.query?.trim()) {
@@ -108,7 +110,7 @@ export default function SearchMovie() {
         ? window.location.search.replace(/^\?/, '')
         : '';
     if (current !== search) navigate(`/search?${search}`, { replace: true });
-  }, [filtros.query, filtros.type]);
+  }, [filtros.query, filtros.type, filtros.page, navigate]);
 
   return (
     <section className="mx-auto p-6">
@@ -139,7 +141,9 @@ export default function SearchMovie() {
                 {type.map((opt) => (
                   <button
                     key={opt.key}
-                    onClick={() => setFiltros({ ...filtros, type: opt.key })}
+                    onClick={() =>
+                      setFiltros({ ...filtros, type: opt.key, page: null })
+                    }
                     className={`px-3 py-1 rounded-full text-sm transition-all cursor-pointer ${
                       filtros.type === opt.key
                         ? 'bg-red-600 text-white shadow'
@@ -162,10 +166,11 @@ export default function SearchMovie() {
               {hasMore && (
                 <div className="flex justify-center mt-6">
                   <button
-                    onClick={fetchMore}
-                    className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full shadow"
+                    onClick={() => !loading && !isFetchingMore && fetchMore()}
+                    disabled={loading || isFetchingMore}
+                    className="px-6 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-full shadow"
                   >
-                    Carregar mais
+                    {isFetchingMore ? 'Carregando...' : 'Carregar mais'}
                   </button>
                 </div>
               )}

@@ -85,7 +85,6 @@ export default function MyCollection() {
     toast({ mensagem: 'Removendo...' });
     setProcessing(true);
     const data = {
-      accountI: user.id,
       session_id: session,
       media_type: activeTab === 'movies' ? 'movie' : 'tv',
       media_id: media_id,
